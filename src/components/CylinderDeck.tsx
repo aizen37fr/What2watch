@@ -8,12 +8,13 @@ import { useAuth } from '../context/AuthContext';
 interface CylinderDeckProps {
     items: ContentItem[];
     onClose: () => void;
+    onSwipe?: (item: ContentItem, dir: 'like' | 'nope') => void;
 }
 
 const CARD_WIDTH = 260; // Slightly narrower for better cylinder density
 const GAP = 20;
 
-export default function CylinderDeck({ items, onClose }: CylinderDeckProps) {
+export default function CylinderDeck({ items, onClose, onSwipe }: CylinderDeckProps) {
     const { addToWatchlist } = useAuth();
     const containerRef = useRef<HTMLDivElement>(null);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -88,6 +89,11 @@ export default function CylinderDeck({ items, onClose }: CylinderDeckProps) {
     // Quick Actions on Active Card
     const swipeActive = (dir: 'like' | 'nope') => {
         if (!items[activeIndex]) return;
+
+        // Trigger external handler (for Match Mode)
+        if (onSwipe) {
+            onSwipe(items[activeIndex], dir);
+        }
 
         if (dir === 'like') {
             addToWatchlist(items[activeIndex]);

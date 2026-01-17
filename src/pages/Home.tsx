@@ -20,7 +20,9 @@ const MOODS: { label: Mood; color: string; icon: string }[] = [
 
 import SocialView from '../components/SocialView';
 
-export default function HomePage() {
+import { Users } from 'lucide-react';
+
+export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }) {
     const { user } = useAuth();
     const [selectedType, setSelectedType] = useState<ContentType>('movie');
     const [selectedLang, setSelectedLang] = useState<Language>('English');
@@ -108,6 +110,16 @@ export default function HomePage() {
                 </div>
 
                 <div className="flex gap-3">
+                    {/* Match Mode Button */}
+                    <button
+                        onClick={onStartMatch}
+                        className="p-3 bg-pink-500/20 border border-pink-500/50 rounded-full hover:bg-pink-500 hover:text-white transition-all text-pink-500 flex items-center gap-2"
+                        title="Match Mode"
+                    >
+                        <Users size={20} />
+                        <span className="hidden md:inline font-bold text-xs">Match</span>
+                    </button>
+
                     {/* Social / Chat Toggle */}
                     <button
                         onClick={() => setShowSocial(true)}
