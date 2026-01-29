@@ -63,8 +63,8 @@ export async function fetchTMDB(type: 'movie' | 'tv', mood: Mood, language: Lang
         const topResults = data.results.slice(0, 15);
 
         const detailedPromises = topResults.map(async (item: any) => {
-            // 1. Fetch Details (Videos + Providers)
-            const detailUrl = `${BASE_URL}/${type}/${item.id}?api_key=${API_KEY}&append_to_response=videos,watch/providers`;
+            // 1. Fetch Details (Videos + Providers + Credits)
+            const detailUrl = `${BASE_URL}/${type}/${item.id}?api_key=${API_KEY}&append_to_response=videos,watch/providers,credits`;
             const detailRes = await fetch(detailUrl);
             const detailData = await detailRes.json();
 
@@ -92,7 +92,12 @@ export async function fetchTMDB(type: 'movie' | 'tv', mood: Mood, language: Lang
                 image: item.poster_path ? `${IMAGE_BASE}${item.poster_path}` : '',
                 description: item.overview,
                 trailerKey: trailer?.key,
-                watchProviders: providers
+                watchProviders: providers,
+                cast: detailData.credits?.cast?.slice(0, 6).map((c: any) => ({
+                    name: c.name,
+                    character: c.character,
+                    image: c.profile_path ? `${IMAGE_BASE}${c.profile_path}` : null
+                })) || []
             };
         });
 

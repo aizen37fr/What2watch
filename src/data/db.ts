@@ -20,6 +20,7 @@ export interface ContentItem {
         logo: string;
         link: string;
     }[];
+    cast?: { name: string; character: string; image: string | null }[];
 }
 
 export const db: ContentItem[] = [

@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 import type { PanInfo } from 'framer-motion';
 import type { ContentItem } from '../data/db';
-import { Play, Info, Share2, Star, X, Heart } from 'lucide-react';
+import { Info, Star, X, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import TheaterModal from './TheaterModal';
 
 interface CylinderDeckProps {
     items: ContentItem[];
@@ -96,11 +97,7 @@ export default function CylinderDeck({ items, onClose, onSwipe }: CylinderDeckPr
         };
     };
 
-    const handleShare = (item: ContentItem) => {
-        const text = `Check out "${item.title}"!`;
-        navigator.clipboard.writeText(text);
-        alert("Copied!");
-    };
+
 
     // Quick Actions on Active Card
     const swipeActive = (dir: 'like' | 'nope') => {
@@ -278,31 +275,11 @@ export default function CylinderDeck({ items, onClose, onSwipe }: CylinderDeckPr
                 <X size={24} />
             </button>
 
-            {/* Details Modal (Reused) */}
-            <AnimatePresence>
-                {showDetails && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 100 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 100 }}
-                        className="fixed inset-0 z-[70] bg-black/95 p-6 flex flex-col overflow-y-auto"
-                    >
-                        <button onClick={() => setShowDetails(null)} className="self-end p-2 bg-white/10 rounded-full mb-4">
-                            <X size={20} />
-                        </button>
-                        <img src={showDetails.image} className="w-full h-64 object-cover rounded-xl mb-4" />
-                        <h2 className="text-3xl font-bold mb-2">{showDetails.title}</h2>
-                        <p className="text-gray-300 leading-relaxed mb-6 block">{showDetails.description}</p>
-
-                        <div className="mt-auto space-y-3">
-                            {showDetails.trailerUrl && (
-                                <a href={showDetails.trailerUrl} target="_blank" rel="noreferrer" className="w-full bg-red-600 hover:bg-red-700 py-3 rounded-xl flex items-center justify-center gap-2 font-bold"><Play size={20} /> Watch Trailer</a>
-                            )}
-                            <button onClick={() => handleShare(showDetails)} className="w-full bg-white/10 hover:bg-white/20 py-3 rounded-xl flex items-center justify-center gap-2 font-bold"><Share2 size={20} /> Share</button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Immersive Theater Mode Details */}
+            <TheaterModal
+                item={showDetails}
+                onClose={() => setShowDetails(null)}
+            />
         </div>
     );
 }

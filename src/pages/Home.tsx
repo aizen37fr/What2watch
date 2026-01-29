@@ -8,6 +8,9 @@ import { Film, Tv, Zap, Globe, MessageCircle } from 'lucide-react';
 // import SwipeDeck from '../components/SwipeDeck'; // Replaced by Cylinder
 import CylinderDeck from '../components/CylinderDeck';
 import Background from '../components/Background';
+import StreamRoom from './StreamRoom';
+import { mapVibeToQuery } from '../utils/vibeMapper';
+import { Search, Sparkles, MonitorPlay, Mic } from 'lucide-react'; // Added Mic icon
 
 const MOODS: { label: Mood; color: string; icon: string }[] = [
     { label: 'Chill', color: 'bg-blue-500', icon: '🍃' },
@@ -55,10 +58,64 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
     const finalItems = items;
     // Fallback logic is now handled in api.ts
 
-    // Watchlist & Social State
+    // Watchlist & Social & Stream State
     const [showWatchlist, setShowWatchlist] = useState(false);
     const [showSocial, setShowSocial] = useState(false);
+    const [showStreamRoom, setShowStreamRoom] = useState(false);
     const { watchlist, removeFromWatchlist } = useAuth(); // Get watchlist data
+
+    // Voice & Search State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isListening, setIsListening] = useState(false);
+
+    const handleVoiceSearch = () => {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            alert("Voice search is not supported in this browser. Try Chrome!");
+            return;
+        }
+
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.continuous = false;
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        recognition.onerror = () => setIsListening(false);
+
+        recognition.onresult = (event: any) => {
+            const transcript = event.results[0][0].transcript;
+            setSearchQuery(transcript);
+
+            // Auto-trigger search
+            setTimeout(() => {
+                const result = mapVibeToQuery(transcript);
+                if (result) {
+                    setSelectedMood(result.mood);
+                    setSearchQuery('');
+                } else {
+                    // If vague, keep text for manual edit
+                }
+            }, 800);
+        };
+
+        recognition.start();
+    };
+
+    const handleVibeSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!searchQuery.trim()) return;
+
+        const result = mapVibeToQuery(searchQuery);
+        if (result) {
+            setSelectedMood(result.mood);
+            setSearchQuery('');
+        } else {
+            alert("Couldn't quite get that vibe. Try 'sad', 'funny', 'action'...");
+        }
+    };
 
     if (selectedMood) {
         return (
@@ -98,54 +155,99 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
         );
     }
 
+    // ... (rest of search logic)
+
     return (
         <div className="min-h-screen bg-background pb-20 relative overflow-hidden">
             <Background />
 
             {/* Header */}
-            <header className="p-4 md:p-6 flex justify-between items-center glass sticky top-0 z-50 bg-background/80 transition-all">
-                <div>
-                    <h1 className="text-xl md:text-2xl font-bold">Hi, {user?.name} 👋</h1>
-                    <p className="text-gray-400 text-xs md:text-sm">What's the vibe tonight?</p>
+            <header className="p-4 md:p-6 flex flex-col gap-4 relative z-10 sticky top-0 bg-background/80 backdrop-blur-md">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-bold">Hi, {user?.name} 👋</h1>
+                        <p className="text-gray-400 text-xs md:text-sm">What's the vibe tonight?</p>
+                    </div>
+
+                    <div className="flex gap-2 md:gap-3">
+                        {/* Stream Room Button */}
+                        <button
+                            onClick={() => setShowStreamRoom(true)}
+                            className="p-2 md:p-3 bg-blue-500/20 border border-blue-500/50 rounded-full hover:bg-blue-500 hover:text-white transition-all text-blue-400 flex items-center gap-2"
+                            title="Universal Stream"
+                        >
+                            <MonitorPlay size={18} className="md:w-5 md:h-5" />
+                        </button>
+
+                        {/* Match Mode Button */}
+                        <button
+                            onClick={onStartMatch}
+                            className="p-2 md:p-3 bg-pink-500/20 border border-pink-500/50 rounded-full hover:bg-pink-500 hover:text-white transition-all text-pink-500 flex items-center gap-2"
+                            title="Match Mode"
+                        >
+                            <Users size={18} className="md:w-5 md:h-5" />
+                            <span className="hidden md:inline font-bold text-xs">Match</span>
+                        </button>
+
+                        {/* Social / Chat Toggle */}
+                        <button
+                            onClick={() => setShowSocial(true)}
+                            className="p-2 md:p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors text-white"
+                        >
+                            <svg className="w-5 h-5 md:w-6 md:h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6.1H3" /><path d="M21 12.1H3" /><path d="M15.1 18H3" /></svg>
+                        </button>
+
+                        {/* Watchlist Toggle */}
+                        <button
+                            onClick={() => setShowWatchlist(true)}
+                            className="p-2 md:p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors relative"
+                        >
+                            <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                            {watchlist.length > 0 && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-red-500 rounded-full text-[10px] md:text-xs flex items-center justify-center font-bold">
+                                    {watchlist.length}
+                                </span>
+                            )}
+                        </button>
+                    </div>
                 </div>
 
-                <div className="flex gap-2 md:gap-3">
-                    {/* Match Mode Button */}
+                {/* Vibe Search Bar */}
+                <form onSubmit={handleVibeSearch} className="relative w-full max-w-lg mx-auto mb-6 px-4">
+                    <div className="absolute inset-y-0 left-7 flex items-center pointer-events-none text-purple-400">
+                        <Sparkles size={18} />
+                    </div>
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={isListening ? "Listening..." : "Type a vibe... e.g. 'I want to cry'"}
+                        className={`w-full bg-white/5 border ${isListening ? 'border-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.5)]' : 'border-white/10'} rounded-xl py-3 pl-10 pr-20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all`}
+                    />
+
+                    {/* Voice Button */}
                     <button
-                        onClick={onStartMatch}
-                        className="p-2 md:p-3 bg-pink-500/20 border border-pink-500/50 rounded-full hover:bg-pink-500 hover:text-white transition-all text-pink-500 flex items-center gap-2"
-                        title="Match Mode"
+                        type="button"
+                        onClick={handleVoiceSearch}
+                        className={`absolute inset-y-1 right-12 p-2 rounded-lg transition-all ${isListening ? 'text-pink-500 animate-pulse-ring' : 'text-gray-400 hover:text-white'}`}
+                        title="Voice Search"
                     >
-                        <Users size={18} className="md:w-5 md:h-5" />
-                        <span className="hidden md:inline font-bold text-xs">Match</span>
+                        <Mic size={18} />
                     </button>
 
-                    {/* Social / Chat Toggle */}
                     <button
-                        onClick={() => setShowSocial(true)}
-                        className="p-2 md:p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors text-white"
+                        type="submit"
+                        className="absolute inset-y-1 right-2 flex items-center justify-center p-2 text-gray-400 hover:text-white"
                     >
-                        <svg className="w-5 h-5 md:w-6 md:h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6.1H3" /><path d="M21 12.1H3" /><path d="M15.1 18H3" /></svg>
+                        <Search size={18} />
                     </button>
-
-                    {/* Watchlist Toggle */}
-                    <button
-                        onClick={() => setShowWatchlist(true)}
-                        className="p-2 md:p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors relative"
-                    >
-                        <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                        {watchlist.length > 0 && (
-                            <span className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-red-500 rounded-full text-[10px] md:text-xs flex items-center justify-center font-bold">
-                                {watchlist.length}
-                            </span>
-                        )}
-                    </button>
-                </div>
+                </form>
             </header>
 
             {/* Views Overlay */}
             <AnimatePresence>
                 {showSocial && <SocialView onClose={() => setShowSocial(false)} />}
+                {showStreamRoom && <StreamRoom onBack={() => setShowStreamRoom(false)} />}
             </AnimatePresence>
 
             {/* Watchlist Drawer */}
