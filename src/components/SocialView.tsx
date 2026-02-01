@@ -114,10 +114,20 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                                     </div>
                                     <div>
                                         <p className="font-bold text-sm">{user?.name}</p>
-                                        <p className="text-xs text-primary font-mono">{user?.id || '#----'}</p>
+                                        <p className="text-xs text-primary font-mono">@{user?.email?.split('@')[0] || 'guest'}</p>
                                     </div>
                                 </div>
-                                <button onClick={copyId} className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white" title="Copy ID">
+                                <button
+                                    onClick={() => {
+                                        const username = user?.email?.split('@')[0];
+                                        if (username) {
+                                            navigator.clipboard.writeText(username);
+                                            alert('Username copied!');
+                                        }
+                                    }}
+                                    className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white"
+                                    title="Copy Username"
+                                >
                                     <Copy size={18} />
                                 </button>
                             </div>
@@ -183,7 +193,7 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                                                 <div className="flex gap-2">
                                                     <input
                                                         type="text"
-                                                        placeholder="Enter friend's ID (e.g. #1234)"
+                                                        placeholder="Enter friend's username"
                                                         value={friendIdInput}
                                                         onChange={(e) => setFriendIdInput(e.target.value)}
                                                         className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary"
