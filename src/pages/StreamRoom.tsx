@@ -10,6 +10,24 @@ interface StreamRoomProps {
     onBack: () => void;
 }
 
+// Helper to convert YouTube URLs to embed format
+function convertYouTubeUrl(url: string): string {
+    // Match various YouTube URL formats
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+        /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
+    ];
+
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) {
+            return `https://www.youtube.com/embed/${match[1]}`;
+        }
+    }
+
+    return url; // Return original if not a YouTube URL
+}
+
 export default function StreamRoom({ onBack }: StreamRoomProps) {
     const [url, setUrl] = useState('');
     const [playingUrl, setPlayingUrl] = useState('');
@@ -21,18 +39,26 @@ export default function StreamRoom({ onBack }: StreamRoomProps) {
         e.preventDefault();
         if (!url.trim()) return;
 
+        // Convert YouTube URLs to embed format
+        let processedUrl = url.trim();
+
+        // If it's a YouTube URL and we're in video mode, convert it
+        if (mode === 'video' && (url.includes('youtube.com') || url.includes('youtu.be'))) {
+            processedUrl = convertYouTubeUrl(url);
+        }
+
         // If in Video Mode, check support
         if (mode === 'video') {
             // Basic validation logic wrapper
             const canPlay = (ReactPlayer as any).canPlay;
-            if (canPlay && !canPlay(url)) {
+            if (canPlay && !canPlay(processedUrl)) {
                 setError("Standard player can't play this. Try switching to 'Web Embed' mode.");
                 return;
             }
         }
 
         setError('');
-        setPlayingUrl(url);
+        setPlayingUrl(processedUrl);
     };
 
     return (
