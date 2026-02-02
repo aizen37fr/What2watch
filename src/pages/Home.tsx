@@ -12,6 +12,7 @@ import StreamRoom from './StreamRoom';
 import GlobalChat from '../components/GlobalChat';
 import { mapVibeToQuery } from '../utils/vibeMapper';
 import { Search, Sparkles, MonitorPlay, Mic } from 'lucide-react'; // Added Mic icon
+import SmartRecommendations from '../components/SmartRecommendations';
 
 const MOODS: { label: Mood; color: string; icon: string }[] = [
     { label: 'Chill', color: 'bg-blue-500', icon: '🍃' },
@@ -351,6 +352,10 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
 
             <div className="relative z-10 p-6 space-y-8 max-w-4xl mx-auto">
 
+                {/* Smart Recommendations Section */}
+                <section>
+                    <SmartRecommendations />
+                </section>
 
                 {/* Content Type Selection */}
                 <section>
