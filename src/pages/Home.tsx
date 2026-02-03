@@ -11,7 +11,7 @@ import Background from '../components/Background';
 import StreamRoom from './StreamRoom';
 import GlobalChat from '../components/GlobalChat';
 import { mapVibeToQuery } from '../utils/vibeMapper';
-import { Search, Sparkles, MonitorPlay, Mic, Scan, Dna } from 'lucide-react'; // Added Dna icon
+import { Search, Sparkles, MonitorPlay, Mic, Scan, Dna, LogOut, Users } from 'lucide-react'; // Added Dna icon
 import SmartRecommendations from '../components/SmartRecommendations';
 import ClipAnalyzer from '../components/ClipAnalyzer';
 import ReelDNAView from '../components/ReelDNAView';
@@ -35,7 +35,6 @@ const PROVIDERS = [
 
 import SocialView from '../components/SocialView';
 
-import { Users } from 'lucide-react';
 
 export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }) {
     const { user } = useAuth();
@@ -164,9 +163,47 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
 
                     <div className="flex-1 mb-20 flex items-center justify-center">
                         {loading ? (
-                            <div className="flex flex-col items-center gap-4">
-                                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                                <p className="text-gray-400 animate-pulse">Finding best picks...</p>
+                            <div className="relative flex flex-col items-center justify-center py-20">
+                                {/* Neural Scanner Animation */}
+                                <div className="relative w-64 h-64">
+                                    <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                                        className="absolute inset-0 rounded-full border border-purple-500/20"
+                                    />
+                                    <motion.div
+                                        animate={{ rotate: -360 }}
+                                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                                        className="absolute inset-4 rounded-full border border-blue-500/20 border-dashed"
+                                    />
+                                    <motion.div
+                                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                                        transition={{ duration: 2, repeat: Infinity }}
+                                        className="absolute inset-0 bg-gradient-radial from-purple-500/10 to-transparent blur-xl"
+                                    />
+
+                                    {/* Scanning Beam */}
+                                    <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                        className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent via-purple-500/20 to-transparent w-1 h-full mx-auto"
+                                    />
+
+                                    {/* Central Core */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-20 h-20 bg-black rounded-full border border-white/10 flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.5)]">
+                                            <Sparkles className="w-8 h-8 text-purple-400 animate-pulse" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400 mt-8 mb-2">
+                                    Synthesizing Vibe...
+                                </h3>
+                                <div className="flex gap-1">
+                                    <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                    <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                    <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                </div>
                             </div>
                         ) : (
                             <CylinderDeck items={finalItems} onClose={() => setSelectedMood(null)} />
@@ -188,80 +225,126 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
 
             {/* Header */}
             <header className="p-4 md:p-6 flex flex-col gap-4 relative z-10 sticky top-0 bg-background/80 backdrop-blur-md">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-2">
                         <div className="flex flex-col">
-                            <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
-                                Hi, {user?.name} 👋
+                            {/* New Logo / Branding */}
+                            <h1 className="text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                                KINO
                             </h1>
-                            <p className="text-gray-400 text-xs md:text-sm">What's the vibe tonight?</p>
+                            <p className="text-gray-400 text-xs">Social Cinema</p>
                         </div>
-                        <button
-                            onClick={logout}
-                            className="text-xs text-red-400 hover:text-red-300 border border-red-500/30 px-2 py-1 rounded-md ml-2 transition-colors"
-                        >
-                            Log Out
-                        </button>
                     </div>
 
-                    <div className="flex gap-2 md:gap-3">
-                        {/* Reel DNA Button */}
-                        <button
-                            onClick={() => setShowDNA(true)}
-                            className="p-2 md:p-3 bg-purple-500/20 border border-purple-500/50 rounded-full hover:bg-purple-500 hover:text-white transition-all text-purple-400 flex items-center gap-2"
-                            title="My Reel DNA"
-                        >
-                            <Dna size={18} className="md:w-5 md:h-5" />
-                        </button>
-
-                        {/* Stream Room Button */}
-                        <button
-                            onClick={() => setShowStreamRoom(true)}
-                            className="p-2 md:p-3 bg-blue-500/20 border border-blue-500/50 rounded-full hover:bg-blue-500 hover:text-white transition-all text-blue-400 flex items-center gap-2"
-                            title="Universal Stream"
-                        >
-                            <MonitorPlay size={18} className="md:w-5 md:h-5" />
-                        </button>
-
-                        {/* Match Mode Button */}
+                    <div className="flex items-center gap-3">
+                        {/* Big Match Button */}
                         <button
                             onClick={onStartMatch}
-                            className="p-2 md:p-3 bg-pink-500/20 border border-pink-500/50 rounded-full hover:bg-pink-500 hover:text-white transition-all text-pink-500 flex items-center gap-2"
-                            title="Match Mode"
+                            className="bg-white text-black px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:scale-105 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.3)]"
                         >
-                            <Users size={18} className="md:w-5 md:h-5" />
-                            <span className="hidden md:inline font-bold text-xs">Match</span>
+                            <Users size={16} /> Swipe Party
                         </button>
 
-                        {/* Social / Chat Toggle */}
                         <button
-                            onClick={() => setShowSocial(true)}
-                            className="p-2 md:p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors text-white"
+                            onClick={logout}
+                            className="text-white/50 hover:text-white"
                         >
-                            <svg className="w-5 h-5 md:w-6 md:h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6.1H3" /><path d="M21 12.1H3" /><path d="M15.1 18H3" /></svg>
-                        </button>
-
-                        {/* Watchlist Toggle */}
-                        <button
-                            onClick={() => setShowWatchlist(true)}
-                            className="p-2 md:p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors relative"
-                        >
-                            <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                            {watchlist.length > 0 && (
-                                <span className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-red-500 rounded-full text-[10px] md:text-xs flex items-center justify-center font-bold">
-                                    {watchlist.length}
-                                </span>
-                            )}
-                        </button>
-                        {/* Global Chat Button */}
-                        <button
-                            onClick={() => setShowGlobalChat(true)}
-                            className="p-2 md:p-3 bg-green-500/20 border border-green-500/50 rounded-full hover:bg-green-500 hover:text-white transition-all text-green-400 flex items-center gap-2"
-                            title="Global Chat"
-                        >
-                            <Globe size={18} className="md:w-5 md:h-5" />
+                            <LogOut size={16} />
                         </button>
                     </div>
+                </div>
+
+                {/* Hero Banner - Social Focus */}
+                <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-white/10 p-6 mb-8">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 blur-[100px] rounded-full pointer-events-none" />
+
+                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="text-center md:text-left">
+                            <h2 className="text-2xl md:text-4xl font-bold mb-2 text-white">
+                                {user?.name ? `Ready, ${user.name.split(' ')[0]}?` : 'Ready?'} Don't watch alone.
+                            </h2>
+                            <p className="text-gray-300 mb-4 max-w-md">
+                                Invite friends, swipe together, and find the perfect movie match in seconds. No more "I don't know, you pick."
+                            </p>
+                            <div className="flex gap-2 justify-center md:justify-start">
+                                <div className="flex -space-x-3">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="w-8 h-8 rounded-full bg-gray-700 border-2 border-black flex items-center justify-center text-xs">
+                                            👾
+                                        </div>
+                                    ))}
+                                </div>
+                                <span className="text-xs text-gray-400 flex items-center h-8">+3 friends online</span>
+                            </div>
+                        </div>
+
+                        {/* 3D Floating Element Placeholder */}
+                        <div className="w-32 h-32 md:w-40 md:h-40 relative">
+                            <motion.div
+                                animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                className="absolute inset-0 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl rotate-6 opacity-80"
+                            />
+                            <motion.div
+                                animate={{ y: [0, -15, 0], rotate: [0, -5, 0] }}
+                                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                                className="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl -rotate-3 mix-blend-overlay"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center text-4xl">
+                                🍿
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2">
+                    {/* Reel DNA Button */}
+                    <button
+                        onClick={() => setShowDNA(true)}
+                        className="p-2 md:p-3 bg-purple-500/20 border border-purple-500/50 rounded-full hover:bg-purple-500 hover:text-white transition-all text-purple-400 flex items-center gap-2"
+                        title="My Reel DNA"
+                    >
+                        <Dna size={18} className="md:w-5 md:h-5" />
+                    </button>
+
+                    {/* Stream Room Button */}
+                    <button
+                        onClick={() => setShowStreamRoom(true)}
+                        className="p-2 md:p-3 bg-blue-500/20 border border-blue-500/50 rounded-full hover:bg-blue-500 hover:text-white transition-all text-blue-400 flex items-center gap-2"
+                        title="Universal Stream"
+                    >
+                        <MonitorPlay size={18} className="md:w-5 md:h-5" />
+                    </button>
+
+                    {/* Social / Chat Toggle */}
+                    <button
+                        onClick={() => setShowSocial(true)}
+                        className="p-2 md:p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors text-white"
+                    >
+                        <svg className="w-5 h-5 md:w-6 md:h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6.1H3" /><path d="M21 12.1H3" /><path d="M15.1 18H3" /></svg>
+                    </button>
+
+                    {/* Watchlist Toggle */}
+                    <button
+                        onClick={() => setShowWatchlist(true)}
+                        className="p-2 md:p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors relative"
+                    >
+                        <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                        {watchlist.length > 0 && (
+                            <span className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-red-500 rounded-full text-[10px] md:text-xs flex items-center justify-center font-bold">
+                                {watchlist.length}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* Global Chat Button */}
+                    <button
+                        onClick={() => setShowGlobalChat(true)}
+                        className="p-2 md:p-3 bg-green-500/20 border border-green-500/50 rounded-full hover:bg-green-500 hover:text-white transition-all text-green-400 flex items-center gap-2"
+                        title="Global Chat"
+                    >
+                        <Globe size={18} className="md:w-5 md:h-5" />
+                    </button>
                 </div>
 
                 {/* Vibe Search Bar */}
