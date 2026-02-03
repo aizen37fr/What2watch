@@ -6,8 +6,9 @@ import { fetchContent } from '../services/api';
 import type { ContentItem, ContentType, Language, Mood } from '../data/db';
 import { Film, Tv, Zap, Globe, MessageCircle } from 'lucide-react';
 // import SwipeDeck from '../components/SwipeDeck'; // Replaced by Cylinder
-import CylinderDeck from '../components/CylinderDeck';
+// import CylinderDeck from '../components/CylinderDeck';
 import Background from '../components/Background';
+import GalaxyView from '../components/GalaxyView';
 import StreamRoom from './StreamRoom';
 import GlobalChat from '../components/GlobalChat';
 import { mapVibeToQuery } from '../utils/vibeMapper';
@@ -206,7 +207,7 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
                                 </div>
                             </div>
                         ) : (
-                            <CylinderDeck items={finalItems} onClose={() => setSelectedMood(null)} />
+                            <GalaxyView items={finalItems} onSelect={(item) => console.log('Selected', item)} />
                         )}
                     </div>
                 </div>
