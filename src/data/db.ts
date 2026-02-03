@@ -1,4 +1,4 @@
-export type ContentType = 'movie' | 'series' | 'anime';
+export type ContentType = 'movie' | 'series' | 'anime' | 'kdrama' | 'cdrama';
 export type Mood = 'Chill' | 'Excited' | 'Emotional' | 'Laugh' | 'Scared' | 'Mind-bending';
 export type Language = 'English' | 'Hindi' | 'Japanese' | 'Spanish' | 'Korean' | 'French' | 'German' | 'Italian' | 'Chinese' | 'Portuguese' | 'Russian' | 'Arabic';
 
@@ -92,5 +92,34 @@ export const db: ContentItem[] = [
     { id: 's20', title: 'The Family Man', type: 'series', moods: ['Excited', 'Laugh'], genres: ['Action', 'Comedy'], language: 'Hindi', rating: 8.8, year: 2019, image: 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=2000', description: "Spy life balance." },
     { id: 's21', title: 'Kota Factory', type: 'series', moods: ['Chill', 'Emotional'], genres: ['Drama'], language: 'Hindi', rating: 9.0, year: 2019, image: 'https://wallpaperaccess.com/full/2261765.jpg', description: "IIT preparation struggles." },
     { id: 's22', title: 'Panchayat', type: 'series', moods: ['Laugh', 'Chill'], genres: ['Comedy'], language: 'Hindi', rating: 8.9, year: 2020, image: 'https://wallpaperaccess.com/full/1569720.jpg', description: "Village Politics." },
-    { id: 's23', title: 'Scam 1992', type: 'series', moods: ['Mind-bending', 'Excited'], genres: ['Biography', 'Crime'], language: 'Hindi', rating: 9.3, year: 2020, image: 'https://wallpaperaccess.com/full/2666578.jpg', description: "The rise and fall of Harshad Mehta." }
+    { id: 's23', title: 'Scam 1992', type: 'series', moods: ['Mind-bending', 'Excited'], genres: ['Biography', 'Crime'], language: 'Hindi', rating: 9.3, year: 2020, image: 'https://wallpaperaccess.com/full/2666578.jpg', description: "The rise and fall of Harshad Mehta." },
+
+    // ==================== ASIAN DRAMAS (KDrama / CDrama) ====================
+    { id: 'k1', title: 'Crash Landing on You', type: 'kdrama', moods: ['Emotional', 'Excited'], genres: ['Romance', 'Comedy'], language: 'Korean', rating: 8.7, year: 2019, image: 'https://wallpaperaccess.com/full/2146954.jpg', description: "Paragliding mishap drops heiress into North Korea." },
+    { id: 'k2', title: 'Itaewon Class', type: 'kdrama', moods: ['Excited', 'Emotional'], genres: ['Drama'], language: 'Korean', rating: 8.2, year: 2020, image: 'https://wallpaperaccess.com/full/2261765.jpg', description: "Ex-con opens bar to destroy tycoon." },
+    { id: 'c2', title: 'Hidden Love', type: 'cdrama', moods: ['Emotional', 'Chill'], genres: ['Romance'], language: 'Chinese', rating: 8.6, year: 2023, image: 'https://wallpaperaccess.com/full/9628038.jpg', description: "Childhood crush blossoms into love." },
+
+    // ==================== NEW ADDITIONS (Mega Pack) ====================
+    // KDrama Hits
+    { id: 'k3', title: 'Goblin', type: 'kdrama', moods: ['Emotional', 'Mind-bending'], genres: ['Romance', 'Fantasy'], language: 'Korean', rating: 8.6, year: 2016, image: 'https://wallpaperaccess.com/full/3655613.jpg', description: "A legendary goblin searches for his human bride." },
+    { id: 'k4', title: 'Vincenzo', type: 'kdrama', moods: ['Excited', 'Laugh'], genres: ['Crime', 'Comedy'], language: 'Korean', rating: 8.5, year: 2021, image: 'https://wallpaperaccess.com/full/5747372.jpg', description: "Italian mafia lawyer returns to Korea." },
+    { id: 'k5', title: 'All of Us Are Dead', type: 'kdrama', moods: ['Scared', 'Excited'], genres: ['Horror'], language: 'Korean', rating: 7.5, year: 2022, image: 'https://wallpaperaccess.com/full/767175.jpg', description: "Zombie outbreak at a high school." },
+    { id: 'k6', title: 'Twenty Five Twenty One', type: 'kdrama', moods: ['Emotional', 'Chill'], genres: ['Romance'], language: 'Korean', rating: 8.7, year: 2022, image: 'https://wallpaperaccess.com/full/1569720.jpg', description: "A fencer and a sports reporter fall in love." },
+
+    // CDrama Hits
+    { id: 'c3', title: 'Love Between Fairy and Devil', type: 'cdrama', moods: ['Mind-bending', 'Emotional'], genres: ['Fantasy', 'Romance'], language: 'Chinese', rating: 8.8, year: 2022, image: 'https://wallpaperaccess.com/full/8028741.jpg', description: "A fairy accidentally revives a powerful demon lord." },
+    { id: 'c4', title: 'Falling Into Your Smile', type: 'cdrama', moods: ['Laugh', 'Chill'], genres: ['Romance', 'Comedy'], language: 'Chinese', rating: 8.4, year: 2021, image: 'https://wallpaperaccess.com/full/2261765.jpg', description: "A female gamer joins an all-male e-sports team." },
+
+    // Global Movies & Series
+    { id: 'm18', title: 'Avatar: The Way of Water', type: 'movie', moods: ['Excited', 'Mind-bending'], genres: ['Sci-Fi', 'Adventure'], language: 'English', rating: 7.6, year: 2022, image: 'https://wallpaperaccess.com/full/8844111.jpg', description: "Jake Sully lives with his newfound family formed on the extrasolar moon Pandora." },
+    { id: 'm19', title: 'Dune: Part Two', type: 'movie', moods: ['Excited', 'Mind-bending'], genres: ['Sci-Fi', 'Adventure'], language: 'English', rating: 8.8, year: 2024, image: 'https://wallpaperaccess.com/full/10710606.jpg', description: "Paul Atreides unites with Chani and the Fremen while on a warpath of revenge." },
+    { id: 's24', title: 'Shogun', type: 'series', moods: ['Excited', 'Emotional'], genres: ['History', 'Drama'], language: 'English', rating: 9.1, year: 2024, image: 'https://wallpaperaccess.com/full/1569720.jpg', description: "English sailor shipwrecked in Japan." },
+    { id: 's25', title: 'The Bear', type: 'series', moods: ['Emotional', 'Excited'], genres: ['Drama', 'Comedy'], language: 'English', rating: 8.6, year: 2022, image: 'https://wallpaperaccess.com/full/1539281.jpg', description: "A young chef returns to Chicago to run his family sandwich shop." },
+    { id: 's26', title: 'Fallout', type: 'series', moods: ['Excited', 'Laugh'], genres: ['Sci-Fi', 'Action'], language: 'English', rating: 8.5, year: 2024, image: 'https://wallpaperaccess.com/full/134446.jpg', description: "In a future, post-apocalyptic Los Angeles, citizens must live in underground bunkers." },
+
+    // Anime Hits
+    { id: 'a16', title: 'Chainsaw Man', type: 'anime', moods: ['Excited', 'Scared'], genres: ['Action', 'Horror'], language: 'Japanese', rating: 8.5, year: 2022, image: 'https://wallpaperaccess.com/full/1126752.jpg', description: "Denji is a teenage boy living with a Chainsaw Devil named Pochita." },
+    { id: 'a17', title: 'Blue Lock', type: 'anime', moods: ['Excited'], genres: ['Sports'], language: 'Japanese', rating: 8.3, year: 2022, image: 'https://wallpaperaccess.com/full/180598.jpg', description: "Japan's national team needs an egoist striker." },
+    { id: 'a18', title: 'Solo Leveling', type: 'anime', moods: ['Excited', 'Mind-bending'], genres: ['Action', 'Fantasy'], language: 'Japanese', rating: 8.4, year: 2024, image: 'https://wallpaperaccess.com/full/226598.jpg', description: "Weakest hunter becomes the strongest." },
+    { id: 'a19', title: 'Frieren: Beyond Journey\'s End', type: 'anime', moods: ['Chill', 'Emotional'], genres: ['Fantasy', 'Adventure'], language: 'Japanese', rating: 9.1, year: 2023, image: 'https://wallpaperaccess.com/full/2040182.jpg', description: "Elven mage Frieren reflects on her life after the hero party defeat the Demon King." }
 ];

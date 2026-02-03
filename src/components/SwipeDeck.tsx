@@ -168,7 +168,7 @@ export default function SwipeDeck({ items, onClose }: SwipeDeckProps) {
     };
 
     const handleShare = (item: ContentItem) => {
-        const text = `Hey! Check out "${item.title}" on What to Watch!`;
+        const text = `Hey! Check out "${item.title}" on KINO!`;
         navigator.clipboard.writeText(text);
         alert('Link copied to clipboard! Share it with friends.');
     };

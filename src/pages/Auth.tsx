@@ -75,7 +75,7 @@ export default function AuthPage() {
                             <Sparkles className="w-8 h-8 text-primary" />
                         </motion.div>
                         <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-                            What to Watch
+                            KINO
                         </h1>
                         <p className="text-sm text-gray-400 mt-2">
                             {isLogin ? "Welcome back! Login to continue." : "Create an account to join the club."}
@@ -150,7 +150,7 @@ export default function AuthPage() {
                         </button>
                     </div>
                 </div>
-            </motion.div>
-        </div>
+            </motion.div >
+        </div >
     );
 }

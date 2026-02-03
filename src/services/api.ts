@@ -17,9 +17,19 @@ export async function fetchContent(
         if (type === 'anime') {
             items = await fetchAniList(mood);
         } else {
-            // Map 'series' to TMDB's 'tv'
-            const tmdbType = type === 'series' ? 'tv' : 'movie';
-            items = await fetchTMDB(tmdbType, mood, language, providerId);
+            // Map 'series', 'kdrama', 'cdrama' to TMDB's 'tv'
+            let tmdbType: 'movie' | 'tv' = 'movie';
+            let queryLanguage = language;
+
+            if (type === 'series' || type === 'kdrama' || type === 'cdrama') {
+                tmdbType = 'tv';
+            }
+
+            // Force original language for specific categories to ensure correct content
+            if (type === 'kdrama') queryLanguage = 'Korean';
+            if (type === 'cdrama') queryLanguage = 'Chinese';
+
+            items = await fetchTMDB(tmdbType, mood, queryLanguage, providerId);
         }
     } catch (error) {
         console.error("API Fetch Failed", error);

@@ -11,8 +11,10 @@ import Background from '../components/Background';
 import StreamRoom from './StreamRoom';
 import GlobalChat from '../components/GlobalChat';
 import { mapVibeToQuery } from '../utils/vibeMapper';
-import { Search, Sparkles, MonitorPlay, Mic } from 'lucide-react'; // Added Mic icon
+import { Search, Sparkles, MonitorPlay, Mic, Scan, Dna } from 'lucide-react'; // Added Dna icon
 import SmartRecommendations from '../components/SmartRecommendations';
+import ClipAnalyzer from '../components/ClipAnalyzer';
+import ReelDNAView from '../components/ReelDNAView';
 
 const MOODS: { label: Mood; color: string; icon: string }[] = [
     { label: 'Chill', color: 'bg-blue-500', icon: '🍃' },
@@ -73,7 +75,10 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
     const [showWatchlist, setShowWatchlist] = useState(false);
     const [showSocial, setShowSocial] = useState(false);
     const [showStreamRoom, setShowStreamRoom] = useState(false);
+
     const [showGlobalChat, setShowGlobalChat] = useState(false);
+    const [showDetective, setShowDetective] = useState(false);
+    const [showDNA, setShowDNA] = useState(false);
     const { watchlist, removeFromWatchlist, logout } = useAuth(); // Get watchlist data
 
     // Voice & Search State
@@ -200,6 +205,15 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
                     </div>
 
                     <div className="flex gap-2 md:gap-3">
+                        {/* Reel DNA Button */}
+                        <button
+                            onClick={() => setShowDNA(true)}
+                            className="p-2 md:p-3 bg-purple-500/20 border border-purple-500/50 rounded-full hover:bg-purple-500 hover:text-white transition-all text-purple-400 flex items-center gap-2"
+                            title="My Reel DNA"
+                        >
+                            <Dna size={18} className="md:w-5 md:h-5" />
+                        </button>
+
                         {/* Stream Room Button */}
                         <button
                             onClick={() => setShowStreamRoom(true)}
@@ -267,10 +281,20 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
                     <button
                         type="button"
                         onClick={handleVoiceSearch}
-                        className={`absolute inset-y-1 right-12 p-2 rounded-lg transition-all ${isListening ? 'text-pink-500 animate-pulse-ring' : 'text-gray-400 hover:text-white'}`}
+                        className={`absolute inset-y-1 right-20 p-2 rounded-lg transition-all ${isListening ? 'text-pink-500 animate-pulse-ring' : 'text-gray-400 hover:text-white'}`}
                         title="Voice Search"
                     >
                         <Mic size={18} />
+                    </button>
+
+                    {/* CineDetective Button */}
+                    <button
+                        type="button"
+                        onClick={() => setShowDetective(true)}
+                        className="absolute inset-y-1 right-11 p-2 rounded-lg text-gray-400 hover:text-purple-400 transition-colors"
+                        title="Identify Movie (CineDetective)"
+                    >
+                        <Scan size={18} />
                     </button>
 
                     <button
@@ -287,6 +311,9 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
                 {showSocial && <SocialView onClose={() => setShowSocial(false)} />}
                 {showStreamRoom && <StreamRoom onBack={() => setShowStreamRoom(false)} />}
                 <GlobalChat isOpen={showGlobalChat} onClose={() => setShowGlobalChat(false)} />
+                <GlobalChat isOpen={showGlobalChat} onClose={() => setShowGlobalChat(false)} />
+                <ClipAnalyzer isOpen={showDetective} onClose={() => setShowDetective(false)} />
+                <ReelDNAView isOpen={showDNA} onClose={() => setShowDNA(false)} />
             </AnimatePresence>
 
             {/* Watchlist Drawer */}
@@ -365,6 +392,8 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
                             { id: 'movie', label: 'Movies', icon: Film },
                             { id: 'series', label: 'TV Shows', icon: Tv },
                             { id: 'anime', label: 'Anime', icon: Zap },
+                            { id: 'kdrama', label: 'K-Drama', icon: Sparkles },
+                            { id: 'cdrama', label: 'C-Drama', icon: Sparkles },
                         ].map((item) => (
                             <button
                                 key={item.id}

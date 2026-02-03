@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, ChevronLeft, MoreVertical, Phone, Video, UserPlus, Copy } from 'lucide-react';
 import { GROUPS } from '../data/socialMock';
 import { useAuth } from '../context/AuthContext';
+import TasteMatch from './TasteMatch';
 
 interface Message {
     id: string;
@@ -13,7 +14,7 @@ interface Message {
 
 export default function SocialView({ onClose }: { onClose: () => void }) {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState<'groups' | 'chats'>('groups');
+    const [activeTab, setActiveTab] = useState<'groups' | 'chats' | 'match'>('groups');
     const [selectedChat, setSelectedChat] = useState<any | null>(null);
     const [showAddFriend, setShowAddFriend] = useState(false);
     const [friendIdInput, setFriendIdInput] = useState('');
@@ -140,11 +141,19 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                             >
                                 Direct
                             </button>
+                            <button
+                                onClick={() => setActiveTab('match')}
+                                className={`flex-1 py-3 rounded-xl font-bold transition-all ${activeTab === 'match' ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg' : 'bg-white/5 text-gray-400'}`}
+                            >
+                                Match 💕
+                            </button>
                         </div>
 
                         {/* List */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {activeTab === 'groups' ? (
+                            {activeTab === 'match' ? (
+                                <TasteMatch />
+                            ) : activeTab === 'groups' ? (
                                 GROUPS.map(group => (
                                     <motion.div
                                         key={group.id}

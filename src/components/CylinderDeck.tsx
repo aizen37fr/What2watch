@@ -5,6 +5,7 @@ import type { ContentItem } from '../data/db';
 import { Info, Star, X, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import TheaterModal from './TheaterModal';
+import StreamScoreModal from './StreamScoreModal';
 
 interface CylinderDeckProps {
     items: ContentItem[];
@@ -19,6 +20,7 @@ export default function CylinderDeck({ items, onClose, onSwipe }: CylinderDeckPr
     const containerRef = useRef<HTMLDivElement>(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const [showDetails, setShowDetails] = useState<ContentItem | null>(null);
+    const [showRating, setShowRating] = useState<ContentItem | null>(null);
 
     // Responsive sizing
     const [cardWidth, setCardWidth] = useState(260);
@@ -244,7 +246,7 @@ export default function CylinderDeck({ items, onClose, onSwipe }: CylinderDeckPr
             </div>
 
             {/* Controls (Fixed at bottom) */}
-            <div className="absolute bottom-10 left-0 right-0 flex justify-center items-center gap-8 z-50">
+            <div className="absolute bottom-10 left-0 right-0 flex justify-center items-center gap-6 z-50">
                 <button
                     onClick={() => swipeActive('nope')}
                     className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-md border-2 border-red-500 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white hover:scale-110 active:scale-95 transition-all"
@@ -259,6 +261,16 @@ export default function CylinderDeck({ items, onClose, onSwipe }: CylinderDeckPr
                 >
                     <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20">
                         <Info size={24} />
+                    </div>
+                </button>
+
+                {/* Rate Button */}
+                <button
+                    onClick={() => items[activeIndex] && setShowRating(items[activeIndex])}
+                    className="flex flex-col items-center gap-1 text-white opacity-80 hover:opacity-100 hover:scale-105 transition-all"
+                >
+                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20">
+                        <Star size={24} className="text-yellow-400" />
                     </div>
                 </button>
 
@@ -280,6 +292,20 @@ export default function CylinderDeck({ items, onClose, onSwipe }: CylinderDeckPr
                 item={showDetails}
                 onClose={() => setShowDetails(null)}
             />
+
+            {/* StreamScore Rating Modal */}
+            {showRating && (
+                <StreamScoreModal
+                    isOpen={!!showRating}
+                    onClose={() => setShowRating(null)}
+                    contentTitle={showRating.title}
+                    contentId={showRating.id.toString()}
+                    onSubmit={(review) => {
+                        console.log('Submitted Review:', review);
+                        alert(`Thanks for rating ${showRating.title}! Score: ${(review.storyScore + review.actingScore + review.visualsScore + review.endingScore) / 4}`);
+                    }}
+                />
+            )}
         </div>
     );
 }

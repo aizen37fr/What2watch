@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Share2, Star, User } from 'lucide-react';
 import type { ContentItem } from '../data/db';
+import StreamScoreModal from './StreamScoreModal';
 
 interface TheaterModalProps {
     item: ContentItem | null;
@@ -8,6 +10,8 @@ interface TheaterModalProps {
 }
 
 export default function TheaterModal({ item, onClose }: TheaterModalProps) {
+    const [showRating, setShowRating] = useState(false);
+
     if (!item) return null;
 
     const handleShare = () => {
@@ -148,6 +152,12 @@ export default function TheaterModal({ item, onClose }: TheaterModalProps) {
 
                             {/* Action Buttons */}
                             <div className="flex flex-col gap-3 mt-8">
+                                <button
+                                    onClick={() => setShowRating(true)}
+                                    className="w-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 hover:from-yellow-500/30 hover:to-orange-500/30 border border-yellow-500/30 text-yellow-500 py-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-all"
+                                >
+                                    <Star size={20} fill="currentColor" /> Rate with StreamScore
+                                </button>
                                 <button onClick={handleShare} className="w-full bg-white/10 hover:bg-white/20 py-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-colors">
                                     <Share2 size={20} /> Share with Friend
                                 </button>
@@ -155,6 +165,20 @@ export default function TheaterModal({ item, onClose }: TheaterModalProps) {
                         </div>
                     </motion.div>
                 </div>
+            )}
+
+            {/* StreamScore Rating Modal */}
+            {showRating && item && (
+                <StreamScoreModal
+                    isOpen={showRating}
+                    onClose={() => setShowRating(false)}
+                    contentTitle={item.title}
+                    contentId={item.id.toString()}
+                    onSubmit={(review) => {
+                        console.log('Submitted Review:', review);
+                        alert(`Thanks for rating ${item.title}!`);
+                    }}
+                />
             )}
         </AnimatePresence>
     );
