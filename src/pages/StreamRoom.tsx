@@ -62,7 +62,7 @@ function convertToEmbedUrl(url: string): string {
 export default function StreamRoom({ onBack }: StreamRoomProps) {
     const [url, setUrl] = useState('');
     const [playingUrl, setPlayingUrl] = useState('');
-    const [lightsOff, setLightsOff] = useState(false);
+    const [sterileMode, setSterileMode] = useState(false);
     const [error, setError] = useState('');
     const [mode, setMode] = useState<'video' | 'embed'>('video');
 
@@ -72,73 +72,86 @@ export default function StreamRoom({ onBack }: StreamRoomProps) {
 
         // If in Video Mode, use raw URL and let ReactPlayer handle it
         if (mode === 'video') {
-            // Basic validation
             const canPlay = (ReactPlayer as any).canPlay;
             if (canPlay && !canPlay(url)) {
-                setError("Standard player can't play this. Try switching to 'Web Embed' mode.");
+                setError("Signal Incompatible. Switch to 'Web Protocol'.");
                 return;
             }
-            setPlayingUrl(url); // Use raw URL
+            setPlayingUrl(url);
         } else {
-            // Embed Mode: Convert to embeddable format
             const processedUrl = convertToEmbedUrl(url);
             setPlayingUrl(processedUrl);
         }
-
         setError('');
     };
 
     return (
-        <div className={`fixed inset-0 z-50 transition-colors duration-1000 ${lightsOff ? 'bg-black' : 'bg-gray-900'} text-white overflow-hidden flex flex-col`}>
-            {/* Header */}
-            <div className={`p-4 flex items-center justify-between transition-opacity duration-500 ${lightsOff ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}>
-                <button onClick={onBack} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                    <ArrowLeft size={24} />
-                </button>
+        <div className={`fixed inset-0 z-50 transition-colors duration-1000 ${sterileMode ? 'bg-black' : 'bg-slate-900'} text-cyan-50 font-mono overflow-hidden flex flex-col`}>
+            {/* Clinical Header */}
+            <div className={`p-4 flex items-center justify-between border-b border-cyan-900/30 bg-slate-900/50 backdrop-blur-sm transition-opacity duration-500 ${sterileMode ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}>
+                <div className="flex items-center gap-4">
+                    <button onClick={onBack} className="p-2 rounded-lg border border-cyan-900/50 hover:bg-cyan-900/20 text-cyan-400 transition-colors group">
+                        <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                    </button>
+                    <div>
+                        <h1 className="text-xl font-bold tracking-widest uppercase text-cyan-400 flex items-center gap-2">
+                            Isolation Ward <span className="text-xs bg-cyan-900/50 px-2 py-0.5 rounded text-cyan-200">UNIT-{Math.floor(Math.random() * 999)}</span>
+                        </h1>
+                        <div className="flex items-center gap-2 text-[10px] text-cyan-600 uppercase tracking-wider">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> Bio-Sig Active
+                            <span>•</span>
+                            <span>O2: 98%</span>
+                        </div>
+                    </div>
+                </div>
 
-                <div className="flex-1 max-w-3xl mx-4 flex gap-2">
-                    {/* Mode Toggle */}
-                    <div className="bg-black/40 p-1 rounded-xl flex shrink-0">
+                <div className="flex-1 max-w-3xl mx-8 flex gap-2">
+                    {/* Input Source Toggle */}
+                    <div className="flex shrink-0 border border-cyan-900/50 rounded-lg overflow-hidden">
                         <button
                             onClick={() => setMode('video')}
-                            className={`px-3 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'video' ? 'bg-blue-600 shadow-lg' : 'hover:bg-white/10 text-gray-400'}`}
+                            className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${mode === 'video' ? 'bg-cyan-900/50 text-cyan-300' : 'hover:bg-cyan-900/20 text-cyan-700'}`}
                         >
-                            Video
+                            Signal A (Direct)
                         </button>
+                        <div className="w-px bg-cyan-900/50" />
                         <button
                             onClick={() => setMode('embed')}
-                            className={`px-3 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'embed' ? 'bg-purple-600 shadow-lg' : 'hover:bg-white/10 text-gray-400'}`}
+                            className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${mode === 'embed' ? 'bg-cyan-900/50 text-cyan-300' : 'hover:bg-cyan-900/20 text-cyan-700'}`}
                         >
-                            Web Embed
+                            Signal B (Web)
                         </button>
                     </div>
 
                     <form onSubmit={handlePlay} className="relative group flex-1">
-                        <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
-                            <LinkIcon size={16} />
+                        <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-cyan-700">
+                            <LinkIcon size={14} />
                         </div>
                         <input
                             type="text"
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
-                            placeholder={mode === 'video' ? "Paste video link (YouTube, Twitch, TikTok, Vimeo)..." : "Paste website URL to embed..."}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-24 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                            placeholder={mode === 'video' ? "Input Video Signal Source..." : "Input Web Protocol URL..."}
+                            className="w-full bg-slate-950/50 border border-cyan-900/30 rounded-lg py-2 pl-10 pr-24 text-sm text-cyan-100 placeholder-cyan-900/50 focus:outline-none focus:border-cyan-500/50 transition-colors font-mono"
                         />
                         <button
                             type="submit"
-                            className="absolute inset-y-1 right-1 bg-white/10 hover:bg-white/20 text-white px-4 rounded-lg text-sm font-bold transition-colors"
+                            className="absolute inset-y-1 right-1 bg-cyan-900/30 hover:bg-cyan-900/50 text-cyan-400 px-4 rounded text-xs font-bold uppercase tracking-wider transition-colors"
                         >
-                            {mode === 'video' ? 'Play' : 'Load'}
+                            {mode === 'video' ? 'Inject' : 'Load'}
                         </button>
                     </form>
                 </div>
 
                 <button
-                    onClick={() => setLightsOff(!lightsOff)}
-                    className={`p-2 rounded-full transition-colors ${lightsOff ? 'bg-yellow-500/20 text-yellow-500' : 'bg-white/10 text-gray-400'}`}
-                    title={lightsOff ? "Lights On" : "Lights Off"}
+                    onClick={() => setSterileMode(!sterileMode)}
+                    className={`p-2 rounded-lg border transition-colors flex items-center gap-2 ${sterileMode ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400' : 'border-cyan-900/30 text-cyan-700 hover:text-cyan-400'}`}
+                    title={sterileMode ? "Normal Protocol" : "Sterilize Environment"}
                 >
-                    {lightsOff ? <Lightbulb size={24} /> : <LightbulbOff size={24} />}
+                    {sterileMode ? <LightbulbOff size={18} /> : <Lightbulb size={18} />}
+                    <span className="text-xs font-bold uppercase tracking-wider hidden md:inline">
+                        {sterileMode ? "Sterile" : "Normal"}
+                    </span>
                 </button>
             </div>
 
@@ -149,18 +162,32 @@ export default function StreamRoom({ onBack }: StreamRoomProps) {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-500/90 text-white px-6 py-2 rounded-full flex items-center gap-2 z-10"
+                        className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-900/90 border border-red-500/30 text-red-200 px-6 py-2 rounded-none flex items-center gap-2 z-10 font-mono text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(220,38,38,0.5)]"
                     >
-                        <AlertCircle size={16} />
-                        <span className="text-sm font-bold">{error}</span>
+                        <AlertCircle size={14} />
+                        <span className="font-bold">System Alert: {error}</span>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Player Container */}
-            <div className="flex-1 flex items-center justify-center p-4 relative">
+            {/* Viewport */}
+            <div className="flex-1 flex items-center justify-center p-0 relative bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 to-black">
+                {/* Grid Overlay */}
+                <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${sterileMode ? 'opacity-0' : 'opacity-20'}`}
+                    style={{ backgroundImage: 'linear-gradient(rgba(6,182,212,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+
                 {playingUrl ? (
-                    <div className="w-full h-full max-w-6xl max-h-[85vh] aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl relative">
+                    <div className={`w-full h-full transition-all duration-1000 relative ${sterileMode ? 'max-w-full max-h-screen' : 'max-w-6xl max-h-[80vh] border border-cyan-900/30 shadow-[0_0_100px_rgba(6,182,212,0.1)] rounded-sm'}`}>
+                        {/* Corner Markers */}
+                        {!sterileMode && (
+                            <>
+                                <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-cyan-500/50" />
+                                <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-cyan-500/50" />
+                                <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-cyan-500/50" />
+                                <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-cyan-500/50" />
+                            </>
+                        )}
+
                         {mode === 'video' ? (
                             <Player
                                 url={playingUrl}
@@ -169,7 +196,7 @@ export default function StreamRoom({ onBack }: StreamRoomProps) {
                                 controls
                                 playing
                                 light={false}
-                                onError={() => setError("Error loading video source. Try 'Web Embed' mode.")}
+                                onError={() => setError("Signal Lost. Try 'Signal B'.")}
                             />
                         ) : (
                             <iframe
@@ -182,16 +209,16 @@ export default function StreamRoom({ onBack }: StreamRoomProps) {
                         )}
                     </div>
                 ) : (
-                    <div className="text-center opacity-30">
-                        <div className="w-24 h-24 mx-auto mb-4 border-4 border-dashed border-gray-600 rounded-full flex items-center justify-center">
-                            <LinkIcon size={40} />
+                    <div className="text-center opacity-50 flex flex-col items-center">
+                        <div className="w-32 h-32 mb-6 border border-cyan-900/50 rounded-full flex items-center justify-center relative animate-[spin_10s_linear_infinite]">
+                            <div className="absolute inset-0 border-t border-cyan-500/50 rounded-full" />
+                            <LinkIcon size={32} className="text-cyan-500 animate-[spin_10s_linear_infinite_reverse]" />
                         </div>
-                        <h2 className="text-2xl font-bold">Ready to Stream</h2>
-                        <p>Paste a link above to start.</p>
-                        <p className="text-xs mt-2 text-gray-500">
-                            {mode === 'video'
-                                ? "Supports YouTube, Twitch, TikTok, Vimeo, Dailymotion, and direct files."
-                                : "Embeds websites directly. (Note: Some sites block embedding)"}
+                        <h2 className="text-3xl font-black uppercase tracking-[0.2em] text-cyan-900">Awaiting Signal</h2>
+                        <p className="text-cyan-800 font-mono text-xs mt-2 max-w-md mx-auto">
+                            INITIALIZE PROTOCOL: ENTER SOURCE URL TO COMMENCE OBSERVATION.
+                            <br />
+                            RECOMMENDED: YT / TWITCH / DIRECT FEED
                         </p>
                     </div>
                 )}

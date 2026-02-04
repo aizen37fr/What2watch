@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ChevronLeft, MoreVertical, Phone, Video, UserPlus, Copy } from 'lucide-react';
+import { Send, ChevronLeft, MoreVertical, Phone, Video, UserPlus, FileText, Activity, Dna } from 'lucide-react';
 import { GROUPS } from '../data/socialMock';
 import { useAuth } from '../context/AuthContext';
 import TasteMatch from './TasteMatch';
@@ -21,12 +21,12 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
 
     // Default chats
     const [chats, setChats] = useState([
-        { id: 'u2', name: 'Sarah', lastMessage: 'See you then!', time: 'Now' },
-        { id: 'u3', name: 'Mike', lastMessage: 'That movie was crazy', time: '1h ago' }
+        { id: 'u2', name: 'Dr. Sarah', lastMessage: 'Patient stabilized.', time: 'Now' },
+        { id: 'u3', name: 'Nurse Mike', lastMessage: 'Vitals spiking in Ward 4', time: '1h ago' }
     ]);
 
     const [messages, setMessages] = useState<Message[]>([
-        { id: '1', text: 'Hey! What are we watching?', senderId: 'u2', timestamp: '8:30 PM' },
+        { id: '1', text: 'Subject exhibiting high cortisol levels. Recommend calming visuals.', senderId: 'u2', timestamp: '0830' },
     ]);
     const [input, setInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -43,7 +43,7 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
             id: Date.now().toString(),
             text: input,
             senderId: 'me',
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
         };
         setMessages([...messages, newMsg]);
         setInput('');
@@ -52,9 +52,9 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
         setTimeout(() => {
             const reply: Message = {
                 id: (Date.now() + 1).toString(),
-                text: 'Sounds great! Let\'s do it! 🍿',
+                text: 'Acknowledged. Updating charts.',
                 senderId: 'other',
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
             };
             setMessages(prev => [...prev, reply]);
         }, 1500);
@@ -65,14 +65,13 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
         // Simulate adding a friend
         const newFriend = {
             id: friendIdInput,
-            name: `User ${friendIdInput}`,
-            lastMessage: 'New connection',
+            name: `Patient ${friendIdInput}`,
+            lastMessage: 'New admission',
             time: 'Just now'
         };
         setChats([newFriend, ...chats]);
         setFriendIdInput('');
         setShowAddFriend(false);
-        alert(`Friend ${newFriend.name} added!`);
         // Switch to DMs tab
         setActiveTab('chats');
     };
@@ -81,7 +80,7 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
         <motion.div
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 bg-black/95 z-[60] flex flex-col md:max-w-md md:left-auto md:border-l md:border-white/10"
+            className="fixed inset-0 bg-slate-900/95 z-[60] flex flex-col md:max-w-md md:left-auto md:border-l md:border-cyan-900/30 text-cyan-50 font-mono"
         >
             <AnimatePresence mode="wait">
                 {!selectedChat ? (
@@ -89,68 +88,58 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                     <motion.div
                         key="list"
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex-1 flex flex-col h-full"
+                        className="flex-1 flex flex-col h-full bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-cyan-900/20 to-slate-900"
                     >
                         {/* Header */}
-                        <header className="p-6 border-b border-white/10 bg-white/5 backdrop-blur-md">
+                        <header className="p-6 border-b border-cyan-900/30 bg-slate-900/50 backdrop-blur-md">
                             <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-2xl font-bold">Social 💬</h2>
-                                <button onClick={onClose} className="p-2 bg-white/10 rounded-full hover:bg-white/20">
-                                    <ChevronLeft size={24} />
+                                <h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-2 text-cyan-400">
+                                    <FileText size={20} /> Patient Logs
+                                </h2>
+                                <button onClick={onClose} className="p-2 bg-cyan-900/20 rounded-lg hover:bg-cyan-900/40 text-cyan-400">
+                                    <ChevronLeft size={20} />
                                 </button>
                             </div>
 
                             {/* User ID Display */}
-                            <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                            <div className="flex items-center justify-between p-3 bg-black/40 rounded-sm border border-cyan-900/30">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center font-bold text-lg">
+                                    <div className="w-10 h-10 rounded-sm bg-cyan-900/50 flex items-center justify-center font-bold text-lg border border-cyan-500/30 text-cyan-300">
                                         {user?.name?.[0]?.toUpperCase() || 'U'}
                                     </div>
                                     <div>
-                                        <p className="font-bold text-sm">{user?.name}</p>
-                                        <p className="text-xs text-primary font-mono">@{user?.email?.split('@')[0] || 'guest'}</p>
+                                        <p className="font-bold text-sm uppercase tracking-wider text-cyan-200">{user?.name}</p>
+                                        <p className="text-[10px] text-cyan-600 font-mono uppercase">ID: {user?.email?.split('@')[0] || 'GUEST-01'}</p>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() => {
-                                        const username = user?.email?.split('@')[0];
-                                        if (username) {
-                                            navigator.clipboard.writeText(username);
-                                            alert('Username copied!');
-                                        }
-                                    }}
-                                    className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white"
-                                    title="Copy Username"
-                                >
-                                    <Copy size={18} />
-                                </button>
+                                <Activity size={18} className="text-green-500 animate-pulse" />
                             </div>
                         </header>
 
                         {/* Tabs */}
-                        <div className="flex p-4 gap-4">
+                        <div className="flex p-4 gap-2">
                             <button
                                 onClick={() => setActiveTab('groups')}
-                                className={`flex-1 py-3 rounded-xl font-bold transition-all ${activeTab === 'groups' ? 'bg-primary text-white shadow-lg shadow-red-900/20' : 'bg-white/5 text-gray-400'}`}
+                                className={`flex-1 py-3 rounded-sm text-xs font-bold uppercase tracking-wider transition-all border ${activeTab === 'groups' ? 'bg-cyan-900/40 border-cyan-500/50 text-cyan-300' : 'bg-transparent border-cyan-900/30 text-cyan-700 hover:bg-cyan-900/10'}`}
                             >
-                                Groups
+                                Wards
                             </button>
                             <button
                                 onClick={() => setActiveTab('chats')}
-                                className={`flex-1 py-3 rounded-xl font-bold transition-all ${activeTab === 'chats' ? 'bg-primary text-white shadow-lg shadow-red-900/20' : 'bg-white/5 text-gray-400'}`}
+                                className={`flex-1 py-3 rounded-sm text-xs font-bold uppercase tracking-wider transition-all border ${activeTab === 'chats' ? 'bg-cyan-900/40 border-cyan-500/50 text-cyan-300' : 'bg-transparent border-cyan-900/30 text-cyan-700 hover:bg-cyan-900/10'}`}
                             >
-                                Direct
+                                Consults
                             </button>
                             <button
                                 onClick={() => setActiveTab('match')}
-                                className={`flex-1 py-3 rounded-xl font-bold transition-all ${activeTab === 'match' ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg' : 'bg-white/5 text-gray-400'}`}
+                                className={`flex-1 py-3 rounded-sm text-xs font-bold uppercase tracking-wider transition-all border flex items-center justify-center gap-1 ${activeTab === 'match' ? 'bg-purple-900/40 border-purple-500/50 text-purple-300' : 'bg-transparent border-cyan-900/30 text-cyan-700 hover:bg-cyan-900/10'}`}
                             >
-                                Match 💕
+                                <Dna size={12} /> Genetics
                             </button>
                         </div>
 
                         {/* List */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-2">
                             {activeTab === 'match' ? (
                                 <TasteMatch />
                             ) : activeTab === 'groups' ? (
@@ -159,17 +148,17 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                                         key={group.id}
                                         layoutId={group.id}
                                         onClick={() => setSelectedChat(group)}
-                                        className="p-4 bg-white/5 rounded-2xl flex items-center gap-4 hover:bg-white/10 cursor-pointer border border-white/5"
+                                        className="p-4 bg-black/20 rounded-sm flex items-center gap-4 hover:bg-cyan-900/10 cursor-pointer border border-cyan-900/20 group"
                                     >
-                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-xl font-bold text-white">
+                                        <div className="w-12 h-12 rounded-sm bg-cyan-900/20 flex items-center justify-center text-sm font-bold text-cyan-400 border border-cyan-900/50 group-hover:border-cyan-400/50 transition-colors">
                                             {group.name[0]}
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex justify-between items-center mb-1">
-                                                <h3 className="font-bold text-lg">{group.name}</h3>
-                                                <span className="text-xs text-gray-500">{group.time}</span>
+                                                <h3 className="font-bold text-sm uppercase tracking-wide text-cyan-100">{group.name}</h3>
+                                                <span className="text-[10px] text-cyan-700 font-mono">{group.time}</span>
                                             </div>
-                                            <p className="text-gray-400 text-sm truncate">{group.lastMessage}</p>
+                                            <p className="text-cyan-600 text-xs truncate font-mono">{group.lastMessage}</p>
                                         </div>
                                     </motion.div>
                                 ))
@@ -178,9 +167,9 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                                     {/* Add Friend Trigger */}
                                     <button
                                         onClick={() => setShowAddFriend(!showAddFriend)}
-                                        className="w-full py-3 border border-dashed border-white/20 rounded-xl hover:bg-white/5 text-gray-400 flex items-center justify-center gap-2 mb-4"
+                                        className="w-full py-3 border border-dashed border-cyan-900/40 rounded-sm hover:bg-cyan-900/10 text-cyan-600 flex items-center justify-center gap-2 mb-4 text-xs font-bold uppercase tracking-wider"
                                     >
-                                        <UserPlus size={18} /> Add Friend by ID
+                                        <UserPlus size={16} /> Admit New Patient
                                     </button>
 
                                     {/* Add Friend Input */}
@@ -195,17 +184,17 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                                                 <div className="flex gap-2">
                                                     <input
                                                         type="text"
-                                                        placeholder="Enter friend's username"
+                                                        placeholder="Enter patient ID"
                                                         value={friendIdInput}
                                                         onChange={(e) => setFriendIdInput(e.target.value)}
-                                                        className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                                                        className="flex-1 bg-black/40 border border-cyan-900/30 rounded-sm px-4 py-2 text-cyan-100 focus:outline-none focus:border-cyan-500 font-mono text-sm"
                                                     />
                                                     <button
                                                         onClick={handleAddFriend}
                                                         disabled={!friendIdInput.trim()}
-                                                        className="bg-primary px-4 rounded-xl font-bold disabled:opacity-50"
+                                                        className="bg-cyan-900/50 border border-cyan-500/30 text-cyan-300 px-4 rounded-sm font-bold disabled:opacity-50 text-xs uppercase"
                                                     >
-                                                        Add
+                                                        Admit
                                                     </button>
                                                 </div>
                                             </motion.div>
@@ -216,17 +205,17 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                                         <motion.div
                                             key={chat.id}
                                             onClick={() => setSelectedChat(chat)}
-                                            className="p-4 bg-white/5 rounded-2xl flex items-center gap-4 hover:bg-white/10 cursor-pointer border border-white/5"
+                                            className="p-4 bg-black/20 rounded-sm flex items-center gap-4 hover:bg-cyan-900/10 cursor-pointer border border-cyan-900/20 group"
                                         >
-                                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-xl font-bold text-white">
+                                            <div className="w-12 h-12 rounded-sm bg-green-900/20 flex items-center justify-center text-sm font-bold text-green-400 border border-green-900/50 group-hover:border-green-400/50 transition-colors">
                                                 {chat.name[0]}
                                             </div>
                                             <div className="flex-1">
                                                 <div className="flex justify-between items-center mb-1">
-                                                    <h3 className="font-bold text-lg">{chat.name}</h3>
-                                                    <span className="text-xs text-gray-500">{chat.time}</span>
+                                                    <h3 className="font-bold text-sm uppercase tracking-wide text-cyan-100">{chat.name}</h3>
+                                                    <span className="text-[10px] text-cyan-700 font-mono">{chat.time}</span>
                                                 </div>
-                                                <p className="text-gray-400 text-sm truncate">{chat.lastMessage}</p>
+                                                <p className="text-cyan-600 text-xs truncate font-mono">{chat.lastMessage}</p>
                                             </div>
                                         </motion.div>
                                     ))}
@@ -239,28 +228,28 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                     <motion.div
                         key="chat"
                         initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }}
-                        className="flex-1 flex flex-col h-full bg-surface"
+                        className="flex-1 flex flex-col h-full bg-slate-900"
                     >
                         {/* Header */}
-                        <header className="p-4 border-b border-white/10 flex items-center justify-between bg-black/40 backdrop-blur-md">
+                        <header className="p-4 border-b border-cyan-900/30 flex items-center justify-between bg-black/40 backdrop-blur-md">
                             <div className="flex items-center gap-3">
-                                <button onClick={() => setSelectedChat(null)} className="p-2 hover:bg-white/10 rounded-full">
-                                    <ChevronLeft size={24} />
+                                <button onClick={() => setSelectedChat(null)} className="p-2 hover:bg-cyan-900/20 rounded-lg text-cyan-400">
+                                    <ChevronLeft size={20} />
                                 </button>
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-sm font-bold">
+                                <div className="w-10 h-10 rounded-sm bg-cyan-900/20 flex items-center justify-center text-sm font-bold text-cyan-400 border border-cyan-900/50">
                                     {selectedChat.name[0]}
                                 </div>
                                 <div>
-                                    <h3 className="font-bold">{selectedChat.name}</h3>
-                                    <span className="text-xs text-green-400 flex items-center gap-1">
-                                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Online
+                                    <h3 className="font-bold text-sm uppercase tracking-wide text-cyan-100">{selectedChat.name}</h3>
+                                    <span className="text-[10px] text-green-500 flex items-center gap-1 font-mono uppercase">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> Vitals Stable
                                     </span>
                                 </div>
                             </div>
-                            <div className="flex gap-2 text-gray-400">
-                                <button className="p-2 hover:bg-white/10 rounded-full"><Phone size={20} /></button>
-                                <button className="p-2 hover:bg-white/10 rounded-full"><Video size={20} /></button>
-                                <button className="p-2 hover:bg-white/10 rounded-full"><MoreVertical size={20} /></button>
+                            <div className="flex gap-2 text-cyan-700">
+                                <button className="p-2 hover:bg-cyan-900/20 rounded-lg"><Phone size={18} /></button>
+                                <button className="p-2 hover:bg-cyan-900/20 rounded-lg"><Video size={18} /></button>
+                                <button className="p-2 hover:bg-cyan-900/20 rounded-lg"><MoreVertical size={18} /></button>
                             </div>
                         </header>
 
@@ -268,12 +257,12 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
                             {messages.map(msg => (
                                 <div key={msg.id} className={`flex ${msg.senderId === 'me' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[80%] p-4 rounded-2xl ${msg.senderId === 'me'
-                                        ? 'bg-primary text-white rounded-tr-none'
-                                        : 'bg-white/10 text-white rounded-tl-none'
+                                    <div className={`max-w-[85%] p-3 rounded-sm border ${msg.senderId === 'me'
+                                        ? 'bg-cyan-900/20 border-cyan-500/30 text-cyan-100'
+                                        : 'bg-black/40 border-cyan-900/30 text-gray-300'
                                         }`}>
-                                        <p>{msg.text}</p>
-                                        <span className="text-[10px] opacity-50 mt-1 block text-right">{msg.timestamp}</span>
+                                        <p className="text-sm leading-relaxed">{msg.text}</p>
+                                        <span className="text-[9px] opacity-50 mt-1 block text-right font-mono tracking-wider">{msg.timestamp}</span>
                                     </div>
                                 </div>
                             ))}
@@ -281,21 +270,21 @@ export default function SocialView({ onClose }: { onClose: () => void }) {
                         </div>
 
                         {/* Input */}
-                        <div className="p-4 bg-black/40 backdrop-blur-md border-t border-white/10">
-                            <div className="flex gap-3 items-center">
+                        <div className="p-4 bg-black/60 backdrop-blur-md border-t border-cyan-900/30">
+                            <div className="flex gap-2 items-center">
                                 <input
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                    placeholder="Type a message..."
-                                    className="flex-1 bg-white/10 border-none rounded-full px-6 py-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary outline-none transition-all"
+                                    placeholder="Enter log entry..."
+                                    className="flex-1 bg-slate-900/80 border border-cyan-900/30 rounded-sm px-4 py-3 text-cyan-100 placeholder-cyan-800 focus:outline-none focus:border-cyan-500/50 outline-none transition-all font-mono text-sm"
                                 />
                                 <button
                                     onClick={handleSend}
-                                    className="p-3 bg-primary rounded-full hover:bg-red-600 transition-colors shadow-lg shadow-red-900/30"
+                                    className="p-3 bg-cyan-900/40 border border-cyan-500/30 rounded-sm hover:bg-cyan-900/60 transition-colors text-cyan-400"
                                 >
-                                    <Send size={20} fill="white" />
+                                    <Send size={18} />
                                 </button>
                             </div>
                         </div>
