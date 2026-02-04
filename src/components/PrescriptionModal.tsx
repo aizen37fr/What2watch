@@ -55,8 +55,9 @@ export default function PrescriptionModal({ item, onClose, diagnosticCode = "GEN
                             <h2 className="text-3xl font-black uppercase tracking-tighter">{item.title}</h2>
                         </div>
                         <div className="text-right font-mono text-xs text-gray-500">
-                            <div>DIAG: {diagnosticCode}</div>
-                            <div>RX: {prescriptionType.toUpperCase()}</div>
+                            <div>DIAG: <span className="bg-black text-white px-1">{diagnosticCode}</span></div>
+                            <div className="mt-1">RX: <span className="text-cyan-600 font-bold">{prescriptionType.toUpperCase()}</span></div>
+                            <div className="mt-1 opacity-50">REF: {Math.floor(Math.random() * 999999)}</div>
                         </div>
                     </div>
 
