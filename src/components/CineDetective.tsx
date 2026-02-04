@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Scan, X, Search, Film } from 'lucide-react';
+import { db } from '../data/db';
 
 interface ScanResult {
-    id: number;
+    id: string | number;
     title: string;
     similarity: number;
     episode?: number;
@@ -29,16 +30,21 @@ export default function CineDetective({ onClose }: { onClose: () => void }) {
         }
     };
 
+
+
     const startScan = () => {
         setIsScanning(true);
         setTimeout(() => {
             setIsScanning(false);
+            // Select random item from DB to simulate "Infinite" library
+            const randomItem = db[Math.floor(Math.random() * db.length)];
+
             setResult({
-                id: 101,
-                title: "Blade Runner 2049",
-                similarity: 0.98,
-                timestamp: "01:45:20",
-                image: "https://image.tmdb.org/t/p/w500/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg"
+                id: randomItem.id, // now string, but interface expects number? need to fix interface
+                title: randomItem.title,
+                similarity: 0.85 + (Math.random() * 0.14), // Random 85-99%
+                timestamp: `${Math.floor(Math.random() * 2)}:${Math.floor(Math.random() * 59)}:${Math.floor(Math.random() * 59)}`,
+                image: randomItem.image
             });
         }, 3000);
     };

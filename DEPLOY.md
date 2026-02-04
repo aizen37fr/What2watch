@@ -1,28 +1,32 @@
 # How to Deploy "What to Watch"
 
 ## Option 1: Vercel (Recommended)
-1.  Create a [Vercel account](https://vercel.com).
-2.  Install Vercel CLI:
+
+### Method A: Git Integration (Easiest & Automatic) 🚀
+1.  Push your latest code to GitHub.
+2.  Go to [Vercel Dashboard](https://vercel.com/new).
+3.  Click **"Import"** next to your GitHub repository (`what-to-watch`).
+4.  **Before clicking Deploy:**
+    - Open the **Environment Variables** section.
+    - Add the variables below (Supabase Config).
+5.  Click **Deploy**.
+    - *Vercel will now auto-redeploy every time you save changes!*
+
+### Method B: Vercel CLI (Manual)
+1.  Install Vercel CLI:
     ```bash
     npm install -g vercel
     ```
-3.  Run deploy command in this folder:
+2.  Run deploy command:
     ```bash
     vercel
     ```
-4.  Follow the prompts:
-    - Set up and deploy? **Yes**
-    - Scope: **(Select your account)**
-    - Link to existing project? **No**
-    - Project Name: **what-to-watch**
-    - Directory: **./** (default)
-    - Build Command: `npm run build` (default is correct)
-    - Output Directory: `dist` (default is correct)
+3.  Follow prompts (Keep defaults).
 
-5.  **Environment Variables**:
-    Go to your Vercel Project Dashboard -> Settings -> Environment Variables and add:
-    - `VITE_SUPABASE_URL`: `https://mlgwkrkipbarmrohwdon.supabase.co`
-    - `VITE_SUPABASE_ANON_KEY`: `sb_publishable_jjtX_bMQGKGJQaACWXXXTA_M02r6mIH`
+### 🔑 Environment Variables (Required)
+Add these in Vercel Project Settings > Environment Variables:
+- `VITE_SUPABASE_URL`: `https://mlgwkrkipbarmrohwdon.supabase.co`
+- `VITE_SUPABASE_ANON_KEY`: (Use the key from your `.env` file)
 
 ## Option 2: Netlify
 1.  Drag and drop the `dist/` folder (created after `npm run build`) to [Netlify Drop](https://app.netlify.com/drop).

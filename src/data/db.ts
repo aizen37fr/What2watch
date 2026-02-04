@@ -118,8 +118,19 @@ export const db: ContentItem[] = [
     { id: 's26', title: 'Fallout', type: 'series', moods: ['Excited', 'Laugh'], genres: ['Sci-Fi', 'Action'], language: 'English', rating: 8.5, year: 2024, image: 'https://wallpaperaccess.com/full/134446.jpg', description: "In a future, post-apocalyptic Los Angeles, citizens must live in underground bunkers." },
 
     // Anime Hits
+    // Anime Hits (Expanded)
     { id: 'a16', title: 'Chainsaw Man', type: 'anime', moods: ['Excited', 'Scared'], genres: ['Action', 'Horror'], language: 'Japanese', rating: 8.5, year: 2022, image: 'https://wallpaperaccess.com/full/1126752.jpg', description: "Denji is a teenage boy living with a Chainsaw Devil named Pochita." },
     { id: 'a17', title: 'Blue Lock', type: 'anime', moods: ['Excited'], genres: ['Sports'], language: 'Japanese', rating: 8.3, year: 2022, image: 'https://wallpaperaccess.com/full/180598.jpg', description: "Japan's national team needs an egoist striker." },
     { id: 'a18', title: 'Solo Leveling', type: 'anime', moods: ['Excited', 'Mind-bending'], genres: ['Action', 'Fantasy'], language: 'Japanese', rating: 8.4, year: 2024, image: 'https://wallpaperaccess.com/full/226598.jpg', description: "Weakest hunter becomes the strongest." },
-    { id: 'a19', title: 'Frieren: Beyond Journey\'s End', type: 'anime', moods: ['Chill', 'Emotional'], genres: ['Fantasy', 'Adventure'], language: 'Japanese', rating: 9.1, year: 2023, image: 'https://wallpaperaccess.com/full/2040182.jpg', description: "Elven mage Frieren reflects on her life after the hero party defeat the Demon King." }
+    { id: 'a19', title: 'Frieren: Beyond Journey\'s End', type: 'anime', moods: ['Chill', 'Emotional'], genres: ['Fantasy', 'Adventure'], language: 'Japanese', rating: 9.1, year: 2023, image: 'https://wallpaperaccess.com/full/2040182.jpg', description: "Elven mage Frieren reflects on her life after the hero party defeat the Demon King." },
+    { id: 'a20', title: 'Cyberpunk: Edgerunners', type: 'anime', moods: ['Excited', 'Emotional'], genres: ['Sci-Fi', 'Action'], language: 'Japanese', rating: 8.3, year: 2022, image: 'https://wallpaperaccess.com/full/8288591.jpg', description: "A street kid tries to survive in a technology and body modification-obsessed city of the future." },
+
+    // Sci-Fi Classics
+    { id: 'm20', title: 'Blade Runner 2049', type: 'movie', moods: ['Mind-bending', 'Chill'], genres: ['Sci-Fi'], language: 'English', rating: 8.0, year: 2017, image: 'https://image.tmdb.org/t/p/w500/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg', description: "K discovers a long-buried secret." },
+    { id: 'm21', title: '2001: A Space Odyssey', type: 'movie', moods: ['Mind-bending', 'Chill'], genres: ['Sci-Fi'], language: 'English', rating: 8.3, year: 1968, image: 'https://wallpaperaccess.com/full/1264627.jpg', description: "Evolution of mankind." },
+    { id: 'm22', title: 'Her', type: 'movie', moods: ['Emotional', 'Chill'], genres: ['Romance', 'Sci-Fi'], language: 'English', rating: 8.0, year: 2013, image: 'https://wallpaperaccess.com/full/1569720.jpg', description: "A lonely writer develops an unlikely relationship with an operating system." },
+
+    // More Series
+    { id: 's27', title: 'Succession', type: 'series', moods: ['Excited', 'Laugh'], genres: ['Drama'], language: 'English', rating: 8.8, year: 2018, image: 'https://wallpaperaccess.com/full/2265261.jpg', description: "Power, politics, and money." },
+    { id: 's28', title: 'Severance', type: 'series', moods: ['Mind-bending', 'Scared'], genres: ['Sci-Fi', 'Thriller'], language: 'English', rating: 8.7, year: 2022, image: 'https://wallpaperaccess.com/full/6265005.jpg', description: "Mark leads a team of office workers whose memories have been surgically divided." }
 ];
