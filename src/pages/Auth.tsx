@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Sparkles, Shield } from 'lucide-react';
+import { Lock, User, ArrowRight, Sparkles, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Auth() {
     const [isLogin, setIsLogin] = useState(true);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState(''); // Display name for signup
     const [loading, setLoading] = useState(false);
     const { signIn, signUp } = useAuth();
 
@@ -17,9 +17,11 @@ export default function Auth() {
 
         try {
             if (isLogin) {
-                await signIn(email, password);
+                // Login with username
+                await signIn(username, password);
             } else {
-                await signUp(email, password, username || email.split('@')[0]);
+                // Signup with name, username, password
+                await signUp(username, password, name || username);
             }
             // Auth state will auto-redirect via AuthContext
         } catch (error: any) {
@@ -109,7 +111,7 @@ export default function Auth() {
                             <AnimatePresence mode="wait">
                                 {!isLogin && (
                                     <motion.div
-                                        key="username"
+                                        key="name"
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: 'auto' }}
                                         exit={{ opacity: 0, height: 0 }}
@@ -119,9 +121,9 @@ export default function Auth() {
                                             <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-purple-400 transition-colors" />
                                             <input
                                                 type="text"
-                                                placeholder="Username"
-                                                value={username}
-                                                onChange={(e) => setUsername(e.target.value)}
+                                                placeholder="Display Name"
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
                                                 required
                                                 className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
                                             />
@@ -130,19 +132,17 @@ export default function Auth() {
                                 )}
                             </AnimatePresence>
 
-                            {isLogin ? (
-                                <div className="relative group">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-purple-400 transition-colors" />
-                                    <input
-                                        type="email"
-                                        placeholder="Email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                        className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
-                                    />
-                                </div>
-                            ) : null}
+                            <div className="relative group">
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-purple-400 transition-colors" />
+                                <input
+                                    type="text"
+                                    placeholder="Username"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    required
+                                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-purple-500 focus:bg-white/10 transition-all"
+                                />
+                            </div>
 
                             <div className="relative group">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-purple-400 transition-colors" />
