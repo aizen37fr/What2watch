@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthPage from './pages/Auth';
 import HomePage from './pages/Home';
 import MatchMode from './pages/MatchMode';
+import AIChatbot from './components/AIChatbot';
 
 function AppContent() {
   const { user } = useAuth();
@@ -13,10 +14,20 @@ function AppContent() {
   }
 
   if (currentPage === 'match') {
-    return <MatchMode onBack={() => setCurrentPage('home')} />;
+    return (
+      <>
+        <MatchMode onBack={() => setCurrentPage('home')} />
+        <AIChatbot />
+      </>
+    );
   }
 
-  return <HomePage onStartMatch={() => setCurrentPage('match')} />;
+  return (
+    <>
+      <HomePage onStartMatch={() => setCurrentPage('match')} />
+      <AIChatbot />
+    </>
+  );
 }
 
 function App() {

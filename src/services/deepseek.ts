@@ -26,6 +26,7 @@ export async function analyzeScene(imageFile: File): Promise<SceneAnalysis | nul
 
     try {
         // Convert image to base64
+        // @ts-ignore - Not used yet, will be needed when vision API is available
         const base64 = await fileToBase64(imageFile);
 
         console.log('🤖 DeepSeek: Analyzing scene...');
@@ -164,6 +165,175 @@ export async function generateDescription(title: string, genre: string): Promise
 
     } catch (error) {
         console.error('DeepSeek description error:', error);
+        return null;
+    }
+}
+
+/**
+ * Chat with AI for recommendations and conversation
+ */
+export async function chatWithAI(message: string, conversationHistory: Array<{ role: string, content: string }> = []): Promise<string | null> {
+    if (!API_KEY) return null;
+
+    try {
+        const messages = [
+            {
+                role: 'system',
+                content: 'You are CineBot, a friendly AI movie/anime expert. Give personalized recommendations, explain plots, and help users find what to watch. Keep responses concise (2-3 sentences) and enthusiastic!'
+            },
+            ...conversationHistory,
+            { role: 'user', content: message }
+        ];
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages,
+                temperature: 0.8,
+                max_tokens: 150
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`DeepSeek API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || null;
+
+    } catch (error) {
+        console.error('Chat error:', error);
+        return null;
+    }
+}
+
+/**
+ * Recognize characters from screenshot
+ */
+export async function recognizeCharacters(imageFile: File): Promise<{ characters: string[], show?: string } | null> {
+    if (!API_KEY) return null;
+
+    try {
+        // @ts-ignore - Not used yet, will be needed when vision API is available
+        const base64 = await fileToBase64(imageFile);
+
+        console.log('🎭 DeepSeek: Recognizing characters...');
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages: [{
+                    role: 'user',
+                    content: `Analyze this screenshot and identify:
+1. Character names (if recognizable)
+2. The show/movie they're from
+3. Brief description
+
+Return as JSON: {"characters": ["Name1", "Name2"], "show": "Title", "description": "..."}`
+                }],
+                temperature: 0.3,
+                max_tokens: 200
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`DeepSeek API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content;
+
+        if (!content) return null;
+
+        try {
+            const parsed = JSON.parse(content);
+            return {
+                characters: parsed.characters || [],
+                show: parsed.show
+            };
+        } catch {
+            return null;
+        }
+
+    } catch (error) {
+        console.error('Character recognition error:', error);
+        return null;
+    }
+}
+
+/**
+ * Parse natural language search query
+ */
+export async function parseSearchQuery(query: string): Promise<{
+    searchTerms: string[];
+    filters: {
+        genre?: string;
+        mood?: string;
+        type?: 'movie' | 'tv' | 'anime';
+    };
+} | null> {
+    if (!API_KEY) return null;
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages: [{
+                    role: 'user',
+                    content: `Parse this search query and extract:
+Query: "${query}"
+
+Return JSON:
+{
+  "searchTerms": ["term1", "term2"],
+  "filters": {
+    "genre": "action/drama/comedy/etc",
+    "mood": "exciting/sad/funny/etc",
+    "type": "movie/tv/anime"
+  }
+}
+
+Only include filters if clearly mentioned.`
+                }],
+                temperature: 0.2,
+                max_tokens: 150
+            })
+        });
+
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content;
+
+        if (!content) return null;
+
+        try {
+            return JSON.parse(content);
+        } catch {
+            // Fallback: return query as search term
+            return {
+                searchTerms: [query],
+                filters: {}
+            };
+        }
+
+    } catch (error) {
+        console.error('Search parse error:', error);
         return null;
     }
 }
