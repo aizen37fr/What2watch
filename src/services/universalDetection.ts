@@ -39,21 +39,43 @@ export async function detectContent(imageFile: File): Promise<UniversalDetection
     console.log('🔍 Universal Detection: Starting multi-source scan...');
 
     try {
-        // Run all detection methods in parallel
-        const [animeResult, tmdbResult] = await Promise.allSettled([
+        // Run all detection methods in parallel (including DeepSeek!)
+        const [animeResult, tmdbResult, aiAnalysis] = await Promise.allSettled([
             detectAnime(imageFile),
-            detectFromFilename(imageFile.name), // Try to extract title from filename
+            detectFromFilename(imageFile.name),
+            analyzeWithDeepSeek(imageFile) // NEW: AI-powered analysis
         ]);
 
         // Check anime detection first (most accurate for anime)
         if (animeResult.status === 'fulfilled' && animeResult.value) {
             console.log('✅ Anime detected via trace.moe');
+
+            // Enhance with AI analysis if available
+            if (aiAnalysis.status === 'fulfilled' && aiAnalysis.value) {
+                return {
+                    ...animeResult.value,
+                    overview: aiAnalysis.value.description || animeResult.value.overview,
+                    genres: aiAnalysis.value.genre ?
+                        [...(animeResult.value.genres || []), aiAnalysis.value.genre] :
+                        animeResult.value.genres
+                };
+            }
+
             return animeResult.value;
         }
 
         // Check TMDB detection
         if (tmdbResult.status === 'fulfilled' && tmdbResult.value) {
             console.log('✅ Content detected via TMDB');
+
+            // Enhance with AI analysis
+            if (aiAnalysis.status === 'fulfilled' && aiAnalysis.value) {
+                return {
+                    ...tmdbResult.value,
+                    overview: aiAnalysis.value.description || tmdbResult.value.overview
+                };
+            }
+
             return tmdbResult.value;
         }
 
@@ -61,6 +83,19 @@ export async function detectContent(imageFile: File): Promise<UniversalDetection
         return null;
     } catch (error) {
         console.error('💥 Universal detection error:', error);
+        return null;
+    }
+}
+
+/**
+ * Analyze scene with DeepSeek AI
+ */
+async function analyzeWithDeepSeek(imageFile: File) {
+    try {
+        const { analyzeScene } = await import('./deepseek');
+        return await analyzeScene(imageFile);
+    } catch (error) {
+        console.error('DeepSeek analysis failed:', error);
         return null;
     }
 }
