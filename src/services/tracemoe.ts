@@ -34,7 +34,7 @@ export async function searchAnimeByImage(imageUrl: string): Promise<TraceMoeResu
         let searchUrl = imageUrl;
         if (imageUrl.startsWith('blob:')) {
             const blob = await fetch(imageUrl).then(r => r.blob());
-            const base64 = await blobToBase64(blob);
+            const base64 = await fileToBase64(blob);
             searchUrl = base64;
         }
 
@@ -147,14 +147,20 @@ export async function getAnimeDetails(anilistId: number) {
 }
 
 /**
- * Convert blob to base64
+ * Convert File or Blob to base64
  */
-function blobToBase64(blob: Blob): Promise<string> {
+function fileToBase64(file: File | Blob): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
+        reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+                resolve(reader.result);
+            } else {
+                reject(new Error('Failed to convert file to base64'));
+            }
+        };
         reader.onerror = reject;
-        reader.readAsDataURL(blob);
+        reader.readAsDataURL(file);
     });
 }
 
