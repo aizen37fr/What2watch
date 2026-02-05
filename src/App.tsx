@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthPage from './pages/Auth';
-import HomePage from './pages/Home';
+import CineDetectivePage from './pages/CineDetectivePage';
 import MatchMode from './pages/MatchMode';
 import AIChatbot from './components/AIChatbot';
-import CineDetectiveButton from './components/CineDetectiveButton';
 
 function AppContent() {
   const { user } = useAuth();
-  const [currentPage, setCurrentPage] = useState<'home' | 'match'>('home');
+  const [currentPage, setCurrentPage] = useState<'detective' | 'match'>('detective');
 
   if (!user) {
     return <AuthPage />;
@@ -17,8 +16,7 @@ function AppContent() {
   if (currentPage === 'match') {
     return (
       <>
-        <MatchMode onBack={() => setCurrentPage('home')} />
-        <CineDetectiveButton />
+        <MatchMode onBack={() => setCurrentPage('detective')} />
         <AIChatbot />
       </>
     );
@@ -26,8 +24,7 @@ function AppContent() {
 
   return (
     <>
-      <HomePage onStartMatch={() => setCurrentPage('match')} />
-      <CineDetectiveButton />
+      <CineDetectivePage />
       <AIChatbot />
     </>
   );
