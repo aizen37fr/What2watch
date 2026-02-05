@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Scan, X, Search, Film } from 'lucide-react';
 import { db } from '../data/db';
+import { getRandomAnime } from '../services/anilist';
 
 interface ScanResult {
     id: string | number;
@@ -32,22 +33,54 @@ export default function CineDetective({ onClose }: { onClose: () => void }) {
 
 
 
-    const startScan = () => {
+    const startScan = async () => {
         setIsScanning(true);
-        setTimeout(() => {
-            setIsScanning(false);
-            // Select random item from DB to simulate "Infinite" library
-            const randomItem = db[Math.floor(Math.random() * db.length)];
 
-            setResult({
-                id: randomItem.id, // now string, but interface expects number? need to fix interface
-                title: randomItem.title,
-                similarity: 0.85 + (Math.random() * 0.14), // Random 85-99%
-                timestamp: `${Math.floor(Math.random() * 2)}:${Math.floor(Math.random() * 59)}:${Math.floor(Math.random() * 59)}`,
-                image: randomItem.image
-            });
-        }, 3000);
+        try {
+            // Try to fetch from AniList API first (20k+ anime)
+            const anime = await getRandomAnime();
+
+            setTimeout(() => {
+                setIsScanning(false);
+
+                if (anime) {
+                    // Use live AniList data
+                    setResult({
+                        id: anime.id,
+                        title: anime.title,
+                        similarity: 0.85 + (Math.random() * 0.14), // Random 85-99%
+                        timestamp: `${Math.floor(Math.random() * 2)}:${String(Math.floor(Math.random() * 59)).padStart(2, '0')}:${String(Math.floor(Math.random() * 59)).padStart(2, '0')}`,
+                        image: anime.image
+                    });
+                } else {
+                    // Fallback to local db if API fails
+                    const randomItem = db[Math.floor(Math.random() * db.length)];
+                    setResult({
+                        id: randomItem.id,
+                        title: randomItem.title,
+                        similarity: 0.85 + (Math.random() * 0.14),
+                        timestamp: `${Math.floor(Math.random() * 2)}:${String(Math.floor(Math.random() * 59)).padStart(2, '0')}:${String(Math.floor(Math.random() * 59)).padStart(2, '0')}`,
+                        image: randomItem.image
+                    });
+                }
+            }, 3000);
+        } catch (error) {
+            console.error('CineDetective scan error:', error);
+            // Fallback to local db
+            setTimeout(() => {
+                setIsScanning(false);
+                const randomItem = db[Math.floor(Math.random() * db.length)];
+                setResult({
+                    id: randomItem.id,
+                    title: randomItem.title,
+                    similarity: 0.85 + (Math.random() * 0.14),
+                    timestamp: `${Math.floor(Math.random() * 2)}:${String(Math.floor(Math.random() * 59)).padStart(2, '0')}:${String(Math.floor(Math.random() * 59)).padStart(2, '0')}`,
+                    image: randomItem.image
+                });
+            }, 3000);
+        }
     };
+
 
     return (
         <motion.div
