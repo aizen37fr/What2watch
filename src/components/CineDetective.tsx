@@ -17,7 +17,6 @@ interface ScanResult {
 
 export default function CineDetective({ onClose }: { onClose: () => void }) {
     const [image, setImage] = useState<string | null>(null);
-    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [isScanning, setIsScanning] = useState(false);
     const [result, setResult] = useState<ScanResult | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -34,7 +33,6 @@ export default function CineDetective({ onClose }: { onClose: () => void }) {
 
             const url = URL.createObjectURL(file);
             setImage(url);
-            setUploadedFile(file);
             setResult(null);
             setError(null);
             // Auto-start REAL scan with file
