@@ -47,9 +47,9 @@ export default function CineDetective({ onClose }: { onClose: () => void }) {
         setError(null);
 
         try {
-            // REAL AI SCAN using trace.moe API
-            console.log('🔍 Scanning image with trace.moe AI...');
-            const traceMoeResult = await searchAnimeByImage(imageUrl);
+            // REAL AI SCAN using trace.moe API with File object
+            console.log('🔍 Scanning image with trace.moe AI...', file.name);
+            const traceMoeResult = await searchAnimeByFile(file);
 
             if (traceMoeResult && traceMoeResult.similarity > 0.80) {
                 // High confidence match - use trace.moe result
