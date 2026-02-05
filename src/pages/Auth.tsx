@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Sparkles, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 export default function Auth() {
     const [isLogin, setIsLogin] = useState(true);
@@ -10,8 +9,7 @@ export default function Auth() {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login, signup } = useAuth();
-    const navigate = useNavigate();
+    const { signIn, signUp } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -19,11 +17,11 @@ export default function Auth() {
 
         try {
             if (isLogin) {
-                await login(email, password);
+                await signIn(email, password);
             } else {
-                await signup(email, password, username || email.split('@')[0]);
+                await signUp(email, password, username || email.split('@')[0]);
             }
-            navigate('/');
+            // Auth state will auto-redirect via AuthContext
         } catch (error: any) {
             alert(error.message || 'Authentication failed');
         } finally {
@@ -89,8 +87,8 @@ export default function Auth() {
                             <button
                                 onClick={() => setIsLogin(true)}
                                 className={`flex-1 py-3 rounded-xl font-semibold transition-all duration-300 ${isLogin
-                                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-purple-500/50'
-                                        : 'text-white/60 hover:text-white'
+                                    ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-purple-500/50'
+                                    : 'text-white/60 hover:text-white'
                                     }`}
                             >
                                 Login
@@ -98,8 +96,8 @@ export default function Auth() {
                             <button
                                 onClick={() => setIsLogin(false)}
                                 className={`flex-1 py-3 rounded-xl font-semibold transition-all duration-300 ${!isLogin
-                                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-purple-500/50'
-                                        : 'text-white/60 hover:text-white'
+                                    ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-purple-500/50'
+                                    : 'text-white/60 hover:text-white'
                                     }`}
                             >
                                 Sign Up
