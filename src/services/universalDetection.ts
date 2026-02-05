@@ -23,7 +23,7 @@ export interface UniversalDetectionResult {
     image: string;
     backdrop?: string;
     overview?: string;
-    source: 'trace.moe' | 'tmdb' | 'fallback';
+    source: 'trace.moe' | 'tmdb' | 'fallback' | 'manual-search';
     externalIds?: {
         tmdbId?: number;
         anilistId?: number;
