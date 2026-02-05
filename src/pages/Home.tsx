@@ -9,6 +9,7 @@ import { Globe, MessageCircle } from 'lucide-react';
 // import CylinderDeck from '../components/CylinderDeck';
 import Background from '../components/Background';
 import GalaxyView from '../components/GalaxyView';
+import CardGrid from '../components/CardGrid';
 import StreamRoom from './StreamRoom';
 import GlobalChat from '../components/GlobalChat';
 import { mapVibeToQuery } from '../utils/vibeMapper';
@@ -132,7 +133,7 @@ export default function HomePage({ onStartMatch }: { onStartMatch?: () => void }
                                 </div>
                             </div>
                         ) : (
-                            <GalaxyView items={finalItems} onSelect={(item) => setSelectedItem(item)} />
+                            <CardGrid items={finalItems} onCardClick={(item) => setSelectedItem(item)} />
                         )}
                         <AnimatePresence>
                             {selectedItem && (
