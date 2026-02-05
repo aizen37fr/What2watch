@@ -4,6 +4,7 @@ import AuthPage from './pages/Auth';
 import HomePage from './pages/Home';
 import MatchMode from './pages/MatchMode';
 import AIChatbot from './components/AIChatbot';
+import CineDetectiveButton from './components/CineDetectiveButton';
 
 function AppContent() {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ function AppContent() {
     return (
       <>
         <MatchMode onBack={() => setCurrentPage('home')} />
+        <CineDetectiveButton />
         <AIChatbot />
       </>
     );
@@ -25,6 +27,7 @@ function AppContent() {
   return (
     <>
       <HomePage onStartMatch={() => setCurrentPage('match')} />
+      <CineDetectiveButton />
       <AIChatbot />
     </>
   );
