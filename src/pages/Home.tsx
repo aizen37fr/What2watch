@@ -8,7 +8,6 @@ import { Globe, MessageCircle } from 'lucide-react';
 // import SwipeDeck from '../components/SwipeDeck'; // Replaced by Cylinder
 // import CylinderDeck from '../components/CylinderDeck';
 import Background from '../components/Background';
-import GalaxyView from '../components/GalaxyView';
 import CardGrid from '../components/CardGrid';
 import StreamRoom from './StreamRoom';
 import GlobalChat from '../components/GlobalChat';
