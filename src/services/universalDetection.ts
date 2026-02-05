@@ -42,18 +42,48 @@ export async function detectContent(
     console.log('🔍 Universal Detection: Starting multi-source scan...', { contentType });
 
     try {
-        // If user selected specific type, prioritize that detection
+        // If user selected specific type, ONLY search that type
         if (contentType === 'anime') {
-            // Only try anime detection
+            // ONLY anime detection - skip TMDB entirely
+            console.log('🎌 Searching ONLY anime...');
             const animeResult = await detectAnime(imageFile);
-            if (animeResult) return animeResult;
-        } else if (contentType === 'kdrama-cdrama' || contentType === 'movie-series') {
-            // Skip anime, go directly to TMDB
-            const tmdbResult = await detectFromFilename(imageFile.name);
-            if (tmdbResult) return tmdbResult;
+            if (animeResult) {
+                console.log('✅ Anime found via trace.moe');
+                return animeResult;
+            }
+            console.log('❌ No anime match');
+            return null;
         }
 
-        // 'all' or fallback - Run all detection methods in parallel (including DeepSeek!)
+        if (contentType === 'kdrama-cdrama' || contentType === 'movie-series') {
+            // ONLY TMDB - completely skip anime detection
+            console.log('🎬 Searching ONLY movies/TV/K-dramas (skipping anime)...');
+
+            // Try filename first
+            const tmdbResult = await detectFromFilename(imageFile.name);
+            if (tmdbResult && tmdbResult.confidence > 0.7) {
+                console.log('✅ Found via filename');
+                return tmdbResult;
+            }
+
+            // If filename fails, use AI to help
+            const aiAnalysis = await analyzeWithDeepSeek(imageFile);
+            if (aiAnalysis?.description) {
+                console.log('🤖 Using AI description to search TMDB...');
+                // Extract potential title from AI description
+                const words = aiAnalysis.description.split(' ').slice(0, 5).join(' ');
+                const searchResult = await detectFromFilename(words);
+                if (searchResult) {
+                    return searchResult;
+                }
+            }
+
+            console.log('❌ No movie/TV match found');
+            return null;
+        }
+
+        // 'all' - Run ALL detection methods in parallel
+        console.log('🌐 Searching ALL content types...');
         const [animeResult, tmdbResult, aiAnalysis] = await Promise.allSettled([
             detectAnime(imageFile),
             detectFromFilename(imageFile.name),
