@@ -11,7 +11,7 @@ import { analyzeWithGemini } from './gemini';
 export type ContentType = 'anime' | 'movie' | 'tv' | 'unknown';
 
 export interface UniversalDetectionResult {
-    type: ContentType;
+    type: 'anime' | 'movie' | 'tv';
     title: string;
     originalTitle?: string;
     confidence: number;
@@ -21,7 +21,7 @@ export interface UniversalDetectionResult {
     timestamp?: string;
     genres?: string[];
     rating?: number;
-    image: string;
+    image?: string;
     backdrop?: string;
     overview?: string;
     source: 'trace.moe' | 'tmdb' | 'fallback' | 'manual-search';
@@ -30,6 +30,15 @@ export interface UniversalDetectionResult {
         anilistId?: number;
         imdbId?: string;
     };
+    tags?: string[];
+
+    // Multi-match support from Gemini AI
+    alternativeMatches?: Array<{
+        showName: string;
+        confidence: number;
+        reason: string;
+    }>;
+    aiReasoning?: string;
 }
 
 /**

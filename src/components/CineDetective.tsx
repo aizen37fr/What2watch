@@ -79,7 +79,7 @@ export default function CineDetective({ onClose }: { onClose: () => void }) {
                         // Final fallback to local db
                         const randomItem = db[Math.floor(Math.random() * db.length)];
                         setResult({
-                            type: 'unknown',
+                            type: 'movie',
                             title: randomItem.title,
                             confidence: 0.40,
                             image: randomItem.image,
