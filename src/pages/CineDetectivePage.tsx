@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Scan, Sparkles, Film, Zap, Globe, Search, X } from 'lucide-react';
+import { Upload, Scan, Sparkles, Film, Zap, Globe, Search, X, Video } from 'lucide-react';
 import { detectContent } from '../services/universalDetection';
 import type { UniversalDetectionResult } from '../services/universalDetection';
 import { searchTVByTitle, searchMoviesByTitle } from '../services/tmdb';
 import { getGenreName } from '../data/genres';
+import { extractVideoFrames, getVideoMetadata, getFileType } from '../utils/videoProcessor';
 
 export default function CineDetectiveHero() {
     const [image, setImage] = useState<string | null>(null);
@@ -17,27 +18,85 @@ export default function CineDetectiveHero() {
     const [showManualSearch, setShowManualSearch] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
+    // Video processing states
+    const [isVideo, setIsVideo] = useState(false);
+    const [videoProgress, setVideoProgress] = useState(0);
+    const [extractedFrames, setExtractedFrames] = useState<number>(0);
+
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
-            processImage(file);
+        if (file) {
+            processFile(file);
         }
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            processImage(file);
+            processFile(file);
         }
     };
 
-    const processImage = (file: File) => {
+    const processFile = async (file: File) => {
+        const fileType = getFileType(file);
+
+        if (fileType === 'unknown') {
+            setError('❌ Please upload an image or video file');
+            return;
+        }
+
         const url = URL.createObjectURL(file);
         setImage(url);
         setResult(null);
         setError(null);
-        startScan(file);
+        setIsVideo(fileType === 'video');
+        setVideoProgress(0);
+        setExtractedFrames(0);
+
+        if (fileType === 'video') {
+            await processVideo(file);
+        } else {
+            startScan(file);
+        }
+    };
+
+    const processVideo = async (file: File) => {
+        try {
+            setIsScanning(true);
+            setError(null);
+
+            console.log('🎥 Processing video...');
+
+            // Get video metadata
+            const metadata = await getVideoMetadata(file);
+            console.log('📊 Video metadata:', metadata);
+
+            // Extract frames
+            setVideoProgress(20);
+            const frames = await extractVideoFrames(file, 2, 5); // 5 frames max
+            setExtractedFrames(frames.length);
+            setVideoProgress(60);
+
+            console.log(`✅ Extracted ${frames.length} frames`);
+
+            // Analyze first frame (or combine multiple)
+            if (frames.length > 0) {
+                setVideoProgress(80);
+                const firstFrameFile = new File([frames[0].blob], 'frame.jpg', { type: 'image/jpeg' });
+                await startScan(firstFrameFile);
+            } else {
+                setError('❌ Could not extract frames from video');
+                setIsScanning(false);
+            }
+
+            setVideoProgress(100);
+        } catch (error) {
+            console.error('Video processing error:', error);
+            setError('⚠️ Failed to process video. Please try an image instead.');
+            setIsScanning(false);
+            setVideoProgress(0);
+        }
     };
 
     const startScan = async (file: File) => {
@@ -374,10 +433,10 @@ export default function CineDetectiveHero() {
                                 </motion.div>
 
                                 <h3 className="text-2xl font-bold text-cyan-100 mb-2">
-                                    Drop Screenshot Here
+                                    Drop Screenshot or Video Here
                                 </h3>
                                 <p className="text-cyan-600 mb-4">
-                                    or click to browse
+                                    or click to browse (PNG, JPG, MP4, MOV)
                                 </p>
 
                                 <div className="text-sm text-cyan-700 space-y-1">
@@ -410,7 +469,7 @@ export default function CineDetectiveHero() {
                         <input
                             id="fileInput"
                             type="file"
-                            accept="image/*"
+                            accept="image/*,video/*"
                             onChange={handleFileSelect}
                             className="hidden"
                         />
@@ -426,7 +485,34 @@ export default function CineDetectiveHero() {
                             </div>
                         )}
 
-                        {isScanning && (
+                        {isVideo && videoProgress > 0 && videoProgress < 100 && (
+                            <div className="text-center py-16">
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                    className="mb-6"
+                                >
+                                    <Video className="w-16 h-16 mx-auto text-purple-500" />
+                                </motion.div>
+                                <h4 className="text-xl font-bold text-purple-400 mb-4">
+                                    Processing Video...
+                                </h4>
+                                <div className="w-full max-w-md mx-auto bg-slate-800 rounded-full h-3 overflow-hidden">
+                                    <motion.div
+                                        className="h-full bg-gradient-to-r from-purple-600 to-pink-600"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${videoProgress}%` }}
+                                        transition={{ duration: 0.3 }}
+                                    />
+                                </div>
+                                <p className="text-cyan-600 mt-4">
+                                    {extractedFrames > 0 && `Extracted ${extractedFrames} frames • `}
+                                    {videoProgress}% complete
+                                </p>
+                            </div>
+                        )}
+
+                        {isScanning && !isVideo && (
                             <div className="h-full flex flex-col items-center justify-center">
                                 <motion.div
                                     animate={{ rotate: 360 }}
