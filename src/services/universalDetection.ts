@@ -7,6 +7,8 @@
 import { searchAnimeByFile, getAnimeDetails } from './tracemoe';
 import { searchMoviesByTitle, searchTVByTitle } from './tmdb';
 import { analyzeWithGemini } from './gemini';
+import { identifyDramaFromImage } from './geminiVision';
+import { searchByTitle as searchOMDb, getDetails as getOMDbDetails, convertToContentItem } from './omdb';
 
 export type ContentType = 'anime' | 'movie' | 'tv' | 'unknown';
 
@@ -65,9 +67,64 @@ export async function detectContent(
             return null;
         }
 
+
         if (contentType === 'kdrama-cdrama' || contentType === 'movie-series') {
             // ONLY TMDB - completely skip anime detection
             console.log('🎬 Searching ONLY movies/TV/K-dramas (skipping anime)...');
+
+            // STEP 0: Try Gemini Vision first for drama images! 🤖
+            if (contentType === 'kdrama-cdrama') {
+                console.log('🤖 Gemini Vision: Analyzing K-drama/C-drama screenshot...');
+
+                // Convert File to data URL for Gemini
+                const imageDataUrl = await new Promise<string>((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.readAsDataURL(imageFile);
+                });
+
+                const dramaResult = await identifyDramaFromImage(imageDataUrl);
+
+                if (dramaResult && dramaResult.confidence > 0.6) {
+                    console.log('✅ Gemini identified drama:', dramaResult.title);
+
+                    // Search OMDb for full details
+                    const omdbResults = await searchOMDb(dramaResult.title);
+                    if (omdbResults.length > 0) {
+                        const details = await getOMDbDetails(omdbResults[0].imdbID);
+                        if (details) {
+                            const contentItem = convertToContentItem(details);
+                            return {
+                                type: 'tv',
+                                title: contentItem.title,
+                                originalTitle: dramaResult.originalTitle,
+                                confidence: dramaResult.confidence,
+                                year: contentItem.year || dramaResult.year,
+                                genres: contentItem.genres,
+                                rating: contentItem.rating,
+                                image: contentItem.image,
+                                overview: contentItem.overview,
+                                source: 'tmdb' as const
+                            };
+                        }
+                    }
+
+                    // Even if OMDb fails, return basic info from Gemini
+                    return {
+                        type: 'tv',
+                        title: dramaResult.title,
+                        originalTitle: dramaResult.originalTitle,
+                        confidence: dramaResult.confidence,
+                        year: dramaResult.year,
+                        genres: [],
+                        rating: 0,
+                        image: '',
+                        overview: `Detected ${dramaResult.type === 'kdrama' ? 'Korean' : 'Chinese'} drama from screenshot`,
+                        source: 'tmdb' as const
+                    };
+                }
+                console.log('⚠️ Gemini could not identify drama with high confidence');
+            }
 
             // STEP 1: Try filename first (fastest)
             const tmdbResult = await detectFromFilename(imageFile.name);
