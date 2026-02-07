@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Scan, Sparkles, Film, Zap, Globe, Search, X, Video } from 'lucide-react';
 import { detectContent } from '../services/universalDetection';
 import type { UniversalDetectionResult } from '../services/universalDetection';
-import { searchTVByTitle, searchMoviesByTitle } from '../services/tmdb';
-import { getGenreName } from '../data/genres';
+import { searchByTitle, getDetails, convertToContentItem } from '../services/omdb';
 import { extractVideoFrames, getVideoMetadata, getFileType } from '../utils/videoProcessor';
 import { BatchProcessor } from '../utils/batchProcessor';
 import type { BatchJob, BatchProgress } from '../utils/batchProcessor';
@@ -177,35 +176,35 @@ export default function CineDetectiveHero() {
         try {
             console.log('🔍 Manual search:', { searchQuery, contentType });
 
-            // Search TV shows and movies
-            const [tvResults, movieResults] = await Promise.all([
-                searchTVByTitle(searchQuery),
-                searchMoviesByTitle(searchQuery)
-            ]);
-
-            const searchResults = [...(tvResults || []), ...(movieResults || [])];
+            // Search using OMDb API (works without network restrictions)
+            const searchResults = await searchByTitle(searchQuery);
 
             if (searchResults.length > 0) {
-                const item = searchResults[0];
-                const isTV = 'name' in item;
+                // Get detailed info for the first result
+                const firstResult = searchResults[0];
+                const details = await getDetails(firstResult.imdbID);
 
-                setResult({
-                    type: isTV ? 'tv' : 'movie',
-                    title: isTV ? item.name : item.title,
-                    originalTitle: isTV ? item.original_name : item.original_title,
-                    confidence: 0.95,
-                    year: isTV
-                        ? (item.first_air_date ? new Date(item.first_air_date).getFullYear() : undefined)
-                        : (item.release_date ? new Date(item.release_date).getFullYear() : undefined),
-                    genres: item.genre_ids?.map((id: number) => getGenreName(id)) || [],
-                    rating: item.vote_average,
-                    image: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '',
-                    backdrop: item.backdrop_path ? `https://image.tmdb.org/t/p/original${item.backdrop_path}` : undefined,
-                    overview: item.overview,
-                    source: 'manual-search'
-                });
-                setIsScanning(false);
-                setShowManualSearch(false);
+                if (details) {
+                    // Convert to our format
+                    const contentItem = convertToContentItem(details);
+
+                    setResult({
+                        type: contentItem.type === 'tv' ? 'tv' : 'movie',
+                        title: contentItem.title,
+                        originalTitle: contentItem.title,
+                        confidence: 0.95,
+                        year: contentItem.year,
+                        genres: contentItem.genres,
+                        rating: contentItem.rating,
+                        image: contentItem.image || '',
+                        overview: contentItem.overview,
+                        source: 'manual-search'
+                    });
+                    setIsScanning(false);
+                    setShowManualSearch(false);
+                } else {
+                    throw new Error('Could not get details');
+                }
             } else {
                 setIsScanning(false);
                 setError(`❌ No results found for "${searchQuery}". Try a different search term.`);
